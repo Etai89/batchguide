@@ -193,4 +193,14 @@ $(function(){
       }, 200)
     }
   })
+
+  $('#save_pdf').click(async function(){
+    // Logic to save the content as PDF
+    $('#sidebar, #search, .header-buttons, .copy-btn, #save_pdf, #menu-toggle').toggle();
+    $('#show-solutions').click(); // Hide solutions if visible
+    $('#show-solutions').toggle()
+    // print the page
+    await window.print();
+    // $('#sidebar, #search, .header-buttons, .copy-btn, #save_pdf, #menu-toggle').toggle();
+  })
 })
