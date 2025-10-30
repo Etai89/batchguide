@@ -6,6 +6,21 @@ $(function(){
   const $showSolutions=$('#show-solutions')
   const $solutions=$('#solutions')
   const THEME_KEY='bt_theme'
+  
+  // Mobile navigation
+  $menuToggle.off('click').on('click', function(e){
+    e.preventDefault()
+    $sidebar.toggleClass('open')
+    $('.sidebar-overlay').toggleClass('active')
+    $('body').toggleClass('sidebar-open')
+  })
+  
+  // Close sidebar when clicking overlay
+  $('.sidebar-overlay').off('click').on('click', function(){
+    $sidebar.removeClass('open')
+    $('.sidebar-overlay').removeClass('active')
+    $('body').removeClass('sidebar-open')
+  })
 
   // init theme
   function applyTheme(theme){
@@ -18,11 +33,6 @@ $(function(){
     saved = saved==='dark'?'light':'dark'
     localStorage.setItem(THEME_KEY,saved)
     applyTheme(saved)
-  })
-
-  // sidebar toggle
-  $menuToggle.on('click',function(){
-    $sidebar.toggleClass('open')
   })
 
   // smooth scroll to anchors and active state
@@ -88,28 +98,13 @@ $(function(){
     if(isHidden){
       $solutions.removeAttr('hidden')
       $showSolutions.text('הסתר פתרונות')
-      $('html,body').animate({scrollTop:$solutions.offset().top-20},300)
     } else {
       $solutions.attr('hidden','')
       $showSolutions.text('הצג פתרונות')
     }
   })
 
-  // playground create .bat
-  $('#create-bat').on('click',function(){
-    const txt=$('#play-area').val()
-    const filename=$('#filename').val()||'script.bat'
-    if(!txt.trim()){alert('הכנס קוד לפני יצירה');return}
-    const blob=new Blob([txt],{type:'text/plain;charset=utf-8'})
-    const url=URL.createObjectURL(blob)
-    const a=document.createElement('a')
-    a.href=url
-    a.download=filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  })
+  
 
   // ensure directionality for code blocks
   $('pre code').attr('dir','ltr')
@@ -163,10 +158,17 @@ $(function(){
     searchTimer=setTimeout(()=>markText(term),250)
   })
 
-  // Disable syntax highlighting completely for now
+  // Syntax highlighting disabled to prevent display issues
   function highlightCode(){
-    // Do nothing - let's see the raw code without highlighting
-    console.log('Syntax highlighting disabled for debugging')
+    // Reset all highlighted code blocks to original state
+    $('pre code.highlighted').each(function(){
+      const $c = $(this)
+      $c.removeClass('highlighted')
+      // Remove any existing highlighting spans and restore clean text
+      const cleanText = $c.text()
+      $c.html(cleanText)
+    })
+    return
   }
   highlightCode()
 
@@ -180,39 +182,15 @@ $(function(){
     $('#play-area, #filename').attr('dir','ltr')
   }
   ensureDirections()
-
-  // Enhanced mobile navigation
-  $('#menu-toggle').click(function(){
-    $('.sidebar').toggleClass('open')
-    $('.sidebar-overlay').toggleClass('active')
-    $('body').toggleClass('sidebar-open')
-  })
-  
-  // Close sidebar when clicking overlay
-  $(document).on('click', '.sidebar-overlay', function(){
-    $('.sidebar').removeClass('open')
-    $('.sidebar-overlay').removeClass('active')  
-    $('body').removeClass('sidebar-open')
-  })
   
   // Close sidebar when clicking nav item on mobile
-  $('.nav-item').click(function(){
+  $('.toc a').click(function(){
     if(window.innerWidth <= 900){
       setTimeout(function(){
-        $('.sidebar').removeClass('open')
+        $('#sidebar').removeClass('open')
         $('.sidebar-overlay').removeClass('active')
         $('body').removeClass('sidebar-open')
       }, 200)
     }
   })
-  
-  // Handle window resize
-  $(window).resize(function(){
-    if(window.innerWidth > 900){
-      $('.sidebar').removeClass('open')
-      $('.sidebar-overlay').removeClass('active')
-      $('body').removeClass('sidebar-open')
-    }
-  })
-
 })
