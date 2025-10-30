@@ -1,0 +1,4382 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="logo_192x192.png">
+  <link rel="manifest" href="manifest.json">
+  <title>מדריך Batch בעברית</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header" dir="rtl">
+    <div class="header-inner">
+      <div class="header-content">
+        <div class="header-title">
+          <img src="logo_192x192.png" alt="Batch Logo" class="logo">
+          <h1>מדריך Batch מקיף</h1>
+        </div>
+        <div class="header-buttons">
+          <button id="theme-toggle" aria-pressed="false">מצב כהה/בהיר</button>
+          <a id="top-link" href="#main">חזור לראש העמוד</a>
+        </div>
+      </div>
+      <button id="menu-toggle" aria-label="תפריט">
+        <span style="display:block;font-size:20px;color:#000;">☰</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav id="sidebar" class="sidebar" aria-label="תפריט נושאים">
+      <div class="sidebar-inner">
+        <div class="mobile-logo">
+          <img src="logo_192x192.png" alt="Batch Logo" class="mobile-logo-img">
+          <span>Batch מדריך</span>
+        </div>
+        <input id="search" type="search" placeholder="חפש בטקסט..." aria-label="חיפוש" />
+        <ul class="toc">
+          <li><a href="#intro">מבוא</a></li>
+          <li><a href="#syntax">תחביר בסיסי</a></li>
+          <li><a href="#vars">משתנים</a></li>
+          <li><a href="#logic">תנאים ולוגיקה</a></li>
+          <li><a href="#loops">לולאות</a></li>
+          <li><a href="#files">נתיבים וקבצים</a></li>
+          <li><a href="#text">עבודה עם טקסט</a></li>
+          <li><a href="#io">קלט/פלט למשתמש</a></li>
+          <li><a href="#shell">הרצת תוכניות ו-Shell</a></li>
+          <li><a href="#errors">קודי יציאה ו-errorlevel</a></li>
+          <li><a href="#network">רשת ו-HTTP</a></li>
+          <li><a href="#env">משתני סביבה ו-PATH</a></li>
+          <li><a href="#uac">הרשאות ו-UAC</a></li>
+          <li><a href="#tasks">משימות מתוזמנות</a></li>
+          <li><a href="#registry">רישום</a></li>
+          <li><a href="#pwsh">שיתוף עם PowerShell</a></li>
+          <li><a href="#encoding">קידוד וטקסט</a></li>
+          <li><a href="#iexpress">אריזה ל-EXE ואייקון</a></li>
+          <li><a href="#security">אבטחה ו-Best Practices</a></li>
+          <li><a href="#debug">Debugging</a></li>
+          <li><a href="#practical">דוגמאות מעשיות</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#exercises">תרגילים & פתרונות</a></li>
+        </ul>
+      </div>
+    </nav>
+    
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay"></div>
+
+    <main id="main" class="content" dir="rtl">
+      <article id="intro" class="section">
+        <h2>מבוא</h2>
+        
+        <h3>מה זה CMD (Command Prompt)?</h3>
+        <p>CMD הוא תוכנית בWindows שמאפשרת לכם לכתוב פקודות טקסט במקום ללחוץ על אייקונים. זה כמו לדבר עם המחשב ישירות. לפתיחת CMD: לחצו Win+R, כתבו "cmd" ולחצו Enter.</p>
+        
+        <h3>מה זה קובץ Batch?</h3>
+        <p>קובץ Batch (סיומת .bat או .cmd) הוא קובץ טקסט שמכיל רשימה של פקודות שהמחשב יריץ בזו אחר זו. במקום לכתוב כל פקודה בנפרד ב-CMD, אתם כותבים הכל בקובץ אחד ומריצים אותו.</p>
+        
+        <h3>איך יוצרים קובץ Batch?</h3>
+        <ol>
+          <li>פתחו Notepad (פנקס הרשימות)</li>
+          <li>כתבו את הפקודות שלכם (דוגמה למטה)</li>
+          <li>שמרו בשם "script.bat" (חשוב הסיומת .bat)</li>
+          <li>לחצו פעמיים על הקובץ כדי להריץ אותו</li>
+        </ol>
+        
+        <h3>טיפים וזהירות</h3>
+        <ul>
+          <li>אל תריצו קבצים לא מוכרים.</li>
+          <li>שמרו גיבויים לפני שינויים ב-Registry או Program Files.</li>
+          <li>השתמשו בעורך טקסט שתומך ב-UTF-8 עם BOM עבור עברית.</li>
+          <li>בדקו תמיד קבצי .bat בסביבה מבוקרת לפני הרצה.</li>
+        </ul>
+        
+        <h3>הדוגמה הראשונה שלכם</h3>
+        <p>זו דוגמה פשוטה שמדגימה כמה פקודות בסיסיות. העתיקו לNotepad ושמרו כ-"first.bat":</p>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Your First Batch Script</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set /p name=Enter your name: 
+echo Hello %name%
+if "%name%"=="" (
+  echo No name provided
+) else (
+  echo Name is %name%
+)
+for /l %%i in (1,1,3) do echo Iteration %%i
+pause</code></pre>
+          <div class="output">פלט צפוי: שאלה לשם, Hello + השם, ו-3 איטרציות</div>
+        </div>
+        
+        <h4>הסבר שורה אחר שורה:</h4>
+        <ul dir="rtl">
+          <li><code>@echo off</code> - מבטל הדפסת הפקודות עצמן (רק התוצאות)</li>
+          <li><code>set /p name=</code> - שואל מהמשתמש קלט ושומר במשתנה name</li>
+          <li><code>echo Hello %name%</code> - מדפיס "Hello" + התוכן של המשתנה name</li>
+          <li><code>if "%name%"==""</code> - בודק אם המשתנה ריק</li>
+          <li><code>for /l %%i in (1,1,3)</code> - לולאה מ-1 עד 3</li>
+          <li><code>pause</code> - ממתין ללחיצת מקש לפני סגירה</li>
+        </ul>
+      </article>
+
+      <article id="syntax" class="section">
+        <h2>תחביר בסיסי</h2>
+        
+        <h3>פקודת echo - הדפסת טקסט</h3>
+        <p><code>echo</code> היא הפקודה הבסיסית ביותר - היא מדפיסה טקסט למסך. זה כמו "printf" או "print" בשפות תכנות אחרות.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic echo examples</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">echo Hello World
+echo This is my first batch command
+echo.
+echo The line above was empty</code></pre>
+          <div class="output">הסבר: echo. יוצר שורה ריקה</div>
+        </div>
+        
+        <h3>@echo off - למה זה חשוב?</h3>
+        <p>בלי <code>@echo off</code>, המחשב מדפיס כל פקודה לפני שהוא מריץ אותה. זה יוצר הרבה רעש. <code>@echo off</code> אומר "תריץ הכל בשקט ותראה לי רק תוצאות".</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Without and with @echo off</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">rem This script is NOISY without @echo off
+echo This will show the command AND the output
+echo Another line
+
+rem Now add @echo off at the top:
+@echo off
+echo This shows only the output
+echo Much cleaner!</code></pre>
+        </div>
+        
+        <h3>rem - הערות בקוד</h3>
+        <p><code>rem</code> זה קיצור של "remark" - הערה. כל מה שכתוב אחרי rem לא ירוץ, זה רק הסבר לכם.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Comments with rem</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem This is a comment - it won't run
+echo This line will run
+rem TODO: Add more features later
+echo Program finished</code></pre>
+        </div>
+        
+        <h3>הפניית פלט לקבצים - > ו->> </h3>
+        <p>במקום להדפיס למסך, אתם יכולים לשלוח את הפלט לקובץ:</p>
+        <ul>
+          <li><code>&gt;</code> - כותב לקובץ חדש (מוחק תוכן קיים)</li>
+          <li><code>&gt;&gt;</code> - מוסיף לסוף קובץ קיים</li>
+        </ul>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Output redirection</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo This goes to the screen
+echo This goes to file > output.txt
+echo This REPLACES the file > output.txt
+echo This gets ADDED to file >> output.txt
+echo This also gets added >> output.txt</code></pre>
+          <div class="output">יווצר קובץ output.txt עם 3 שורות (השנייה נמחקה)</div>
+        </div>
+        
+        <h3>צנרת | - העברת מידע בין פקודות</h3>
+        <p>הסימן <code>|</code> (pipe) לוקח את הפלט של פקודה אחת ונותן אותו כקלט לפקודה הבאה.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Pipes in action</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Read file and search for word "ERROR"
+type logfile.txt | find "ERROR"
+
+rem Show directory and count lines
+dir | find /c "txt"
+
+rem Get system info and filter
+systeminfo | find "Total Physical Memory"</code></pre>
+          <div class="output">הסבר: type קורא קובץ, find מחפש טקסט ספציפי</div>
+        </div>
+        
+        <h3>משתני מערכת מובנים</h3>
+        <p>Windows נותן לכם משתנים מוכנים עם מידע על המערכת:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Built-in system variables</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo Current date: %date%
+echo Current time: %time%
+echo Your username: %username%
+echo Computer name: %computername%
+echo Windows directory: %windir%
+echo Your home folder: %userprofile%</code></pre>
+          <div class="output">יציג תאריך, שעה, משתמש ועוד מידע שימושי</div>
+        </div>
+        
+        <h3>תווים מיוחדים ו-Escaping</h3>
+        <p>חלק מהתווים ב-Batch יש להם משמעות מיוחדת. כדי להדפיס אותם רגיל, צריך "לברוח" מהם עם <code>^</code>:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Special characters</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo Use ^ to escape: ^&, ^|, ^>, ^<
+echo To show percent sign: %%
+echo To show exclamation: ^^!
+echo Path with spaces needs quotes: "C:\Program Files\App"
+echo Use quotes for any text with spaces</code></pre>
+        </div>
+        
+        <h3>תרגיל מעשי - יוצרים קובץ לוג</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Practical example - Creating a log</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create a simple log file
+echo ==================== > mylog.txt
+echo System Information Log >> mylog.txt
+echo Date: %date% >> mylog.txt
+echo Time: %time% >> mylog.txt
+echo User: %username% >> mylog.txt
+echo ==================== >> mylog.txt
+
+echo Log created successfully!
+echo Reading the log:
+type mylog.txt</code></pre>
+          <div class="output">יוצר קובץ לוג עם מידע מערכת ומציג אותו</div>
+        </div>
+      </article>
+
+      <article id="vars" class="section">
+        <h2>משתנים</h2>
+        
+        <h3>מה זה משתנה?</h3>
+        <p>משתנה זה כמו קופסה עם שם שיכולה להכיל מידע (טקסט, מספרים). אתם נותנים לקופסה שם, שמים בה משהו, ואחר כך יכולים להוציא ממנה את המידע.</p>
+        
+        <h3>יצירת משתנה עם set</h3>
+        <p>הפקודה <code>set</code> יוצרת משתנה או משנה את התוכן שלו. התחביר: <code>set שם_המשתנה=ערך</code></p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Creating variables</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Creating variables
+set myname=John
+set age=25
+set city=New York
+
+rem Using variables (note the % symbols)
+echo My name is %myname%
+echo I am %age% years old
+echo I live in %city%</code></pre>
+          <div class="output">חשוב: %שם_משתנה% כך משתמשים במשתנה</div>
+        </div>
+        
+        <h3>משתנים עם רווחים</h3>
+        <p>אם הערך כולל רווחים, השתמשו במירכאות או לא - שניהם עובדים:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Variables with spaces</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set message=Hello World
+set "fullpath=C:\Program Files\My App\file.txt"
+set greeting="Good morning everyone"
+
+echo %message%
+echo %fullpath%
+echo %greeting%</code></pre>
+        </div>
+        
+        <h3>קלט מהמשתמש עם set /p</h3>
+        <p><code>set /p</code> עוצר את התוכנית, מציג הודעה למשתמש, וממתין שהוא יכתוב משהו. מה שהמשתמש כתב נשמר במשתנה.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">User input</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set /p username=What is your name? 
+set /p age=How old are you? 
+set /p color=What is your favorite color? 
+
+echo Nice to meet you %username%!
+echo You are %age% years old
+echo %color% is a great color!</code></pre>
+          <div class="output">התוכנית תעצור ותחכה לקלט בכל שורת set /p</div>
+        </div>
+        
+        <h3>משתני מערכת מובנים</h3>
+        <p>Windows מספק הרבה משתנים מוכנים עם מידע שימושי על המערכת:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">System variables</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo User info:
+echo - Username: %USERNAME%
+echo - Home folder: %USERPROFILE%
+echo - Desktop: %USERPROFILE%\Desktop
+
+echo System info:
+echo - Computer name: %COMPUTERNAME%
+echo - Windows folder: %WINDIR%
+echo - System32 folder: %WINDIR%\System32
+
+echo Time info:
+echo - Date: %DATE%
+echo - Time: %TIME%
+
+echo Folders:
+echo - Temp folder: %TEMP%
+echo - Program Files: %PROGRAMFILES%</code></pre>
+        </div>
+        
+        <h3>חישובים עם set /a</h3>
+        <p><code>set /a</code> מאפשר לעשות חישובים מתמטיים. אתם יכולים לחבר, לחסר, לכפול ולחלק:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Math calculations</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set /a result=5+3
+echo 5 + 3 = %result%
+
+set /a result=10*4
+echo 10 * 4 = %result%
+
+set /a result=20/4
+echo 20 / 4 = %result%
+
+set /a result=15-7
+echo 15 - 7 = %result%
+
+rem Using variables in calculations
+set number1=12
+set number2=8
+set /a sum=%number1%+%number2%
+echo %number1% + %number2% = %sum%</code></pre>
+        </div>
+        
+        <h3>עבודה עם טקסט - substring</h3>
+        <p>אתם יכולים לחלץ חלקים מטקסט או להחליף טקסט:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">String manipulation</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set text=Hello World
+
+rem Get part of text (from position 0, take 5 characters)
+echo First 5 chars: %text:~0,5%
+
+rem Get last 5 characters
+echo Last 5 chars: %text:~-5%
+
+rem Get from position 6 to end
+echo From 6th char: %text:~6%
+
+rem Replace text
+echo Replace Hello with Hi: %text:Hello=Hi%
+
+rem Real example - get year from date
+echo Full date: %date%
+echo Year only: %date:~6,4%</code></pre>
+        </div>
+        
+        <h3>הרחבה מושהית - למה זה נחוץ?</h3>
+        <p>כאשר Batch קורא שורה, הוא מחליף את כל ה-%משתנים% מיד. בלולאות זה יוצר בעיות. הרחבה מושהית עם !משתנה! פותרת את זה:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Why delayed expansion is needed</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Without delayed expansion (WRONG) ===
+set counter=0
+for /l %%i in (1,1,3) do (
+  set /a counter=%counter%+1
+  echo Loop %%i: counter = %counter%
+)
+
+echo.
+echo === With delayed expansion (CORRECT) ===
+setlocal enabledelayedexpansion
+set counter=0
+for /l %%i in (1,1,3) do (
+  set /a counter=!counter!+1
+  echo Loop %%i: counter = !counter!
+)
+endlocal</code></pre>
+          <div class="output">בלי delayed expansion המשתנה לא מתעדכן בלולאה</div>
+        </div>
+        
+        <h3>תרגיל מעשי - מחשבון פשוט</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Simple calculator</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+title Simple Calculator
+echo ========================
+echo    Simple Calculator
+echo ========================
+
+set /p num1=Enter first number: 
+set /p num2=Enter second number: 
+
+set /a addition=%num1%+%num2%
+set /a subtraction=%num1%-%num2%
+set /a multiplication=%num1%*%num2%
+set /a division=%num1%/%num2%
+
+echo.
+echo Results:
+echo %num1% + %num2% = %addition%
+echo %num1% - %num2% = %subtraction%
+echo %num1% * %num2% = %multiplication%
+echo %num1% / %num2% = %division%
+
+pause</code></pre>
+        </div>
+      </article>
+
+      <article id="logic" class="section">
+        <h2>תנאים ולוגיקה</h2>
+        
+        <h3>מה זה תנאי?</h3>
+        <p>תנאי זה שאלה שהתוכנית שואלת ומקבלת תשובה כן/לא. לפי התשובה, התוכנית מחליטה מה לעשות. זה כמו: "אם יורד גשם, קח מטריה".</p>
+        
+        <h3>תחביר בסיסי של if</h3>
+        <p>המבנה הבסיסי: <code>if תנאי (מה לעשות אם נכון) else (מה לעשות אם לא נכון)</code></p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic if statement</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set /p age=How old are you? 
+
+if %age% GTR 18 (
+    echo You are an adult
+) else (
+    echo You are under 18
+)
+
+rem Another example
+set /p name=Enter your name: 
+if "%name%"=="John" (
+    echo Hello John, nice to see you!
+) else (
+    echo Hello %name%, welcome!
+)</code></pre>
+          <div class="output">GTR = Greater Than (גדול מ-). שימו לב למירכאות עם טקסט!</div>
+        </div>
+        
+        <h3>אופרטורי השוואה</h3>
+        <p>זה הדרכים השונות להשוות דברים:</p>
+        <ul>
+          <li><code>EQU</code> - שווה ל (EQual)</li>
+          <li><code>NEQ</code> - לא שווה ל (Not EQual)</li>
+          <li><code>GTR</code> - גדול מ (GreaTer)</li>
+          <li><code>GEQ</code> - גדול או שווה ל (Greater or EQual)</li>
+          <li><code>LSS</code> - קטן מ (LeSS)</li>
+          <li><code>LEQ</code> - קטן או שווה ל (Less or EQual)</li>
+        </ul>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Comparison operators</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set /p score=Enter your test score (0-100): 
+
+if %score% GEQ 90 (
+    echo Excellent! Grade: A
+) else if %score% GEQ 80 (
+    echo Very Good! Grade: B
+) else if %score% GEQ 70 (
+    echo Good! Grade: C
+) else if %score% GEQ 60 (
+    echo Pass! Grade: D
+) else (
+    echo Failed! Grade: F
+)
+
+echo Your score was %score%</code></pre>
+        </div>
+        
+        <h3>בדיקת קיום קבצים ותיקיות</h3>
+        <p><code>if exist</code> בודק אם קובץ או תיקייה קיימים. זה מאוד שימושי!</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Checking if files exist</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Check if a file exists
+if exist "C:\Windows\notepad.exe" (
+    echo Notepad is installed
+    start notepad.exe
+) else (
+    echo Notepad not found!
+)
+
+rem Check if a folder exists
+if exist "C:\Program Files" (
+    echo Program Files folder exists
+) else (
+    echo Program Files folder not found
+)
+
+rem Check user input file
+set /p filename=Enter filename to check: 
+if exist "%filename%" (
+    echo File %filename% exists
+    echo File size:
+    dir "%filename%" | find "%filename%"
+) else (
+    echo File %filename% does not exist
+)</code></pre>
+        </div>
+        
+        <h3>בדיקת משתנים - if defined</h3>
+        <p><code>if defined</code> בודק אם משתנה קיים (הוגדר). שימושי לבדוק אם משתמש הכניס קלט:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Checking if variables are defined</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set /p username=Enter your name (or press Enter to skip): 
+
+if defined username (
+    if "%username%"=="" (
+        echo You pressed Enter without typing anything
+    ) else (
+        echo Hello %username%!
+    )
+) else (
+    echo Variable not defined
+)
+
+rem Check system variables
+if defined USERPROFILE (
+    echo Your home folder is: %USERPROFILE%
+) else (
+    echo USERPROFILE variable not found
+)</code></pre>
+        </div>
+        
+        <h3>בדיקת קודי שגיאה - errorlevel</h3>
+        <p>כל פקודה מחזירה מספר שנקרא "exit code" או "errorlevel". 0 = הצליח, מספר אחר = בעיה:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Checking error levels</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Try to copy a file
+copy "nonexistent.txt" "backup.txt" >nul 2>&1
+
+if errorlevel 1 (
+    echo Copy failed - file probably doesn't exist
+) else (
+    echo Copy succeeded
+)
+
+rem Another example - check if program exists
+where notepad.exe >nul 2>&1
+if errorlevel 1 (
+    echo Notepad not found in PATH
+) else (
+    echo Notepad is available
+)</code></pre>
+          <div class="output">הסבר: >nul 2>&1 מסתיר הודעות שגיאה</div>
+        </div>
+        
+        <h3>שילוב תנאים מורכבים</h3>
+        <p>אתם יכולים לשלב כמה תנאים עם סוגריים ו-nested if:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Complex conditions</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set /p username=Enter username: 
+set /p password=Enter password: 
+
+rem Check both username and password
+if "%username%"=="admin" (
+    if "%password%"=="123456" (
+        echo Login successful! Welcome admin.
+        echo You have full access.
+    ) else (
+        echo Wrong password for admin
+    )
+) else if "%username%"=="user" (
+    if "%password%"=="password" (
+        echo Login successful! Welcome user.
+        echo You have limited access.
+    ) else (
+        echo Wrong password for user
+    )
+) else (
+    echo Unknown username: %username%
+)</code></pre>
+        </div>
+        
+        <h3>תרגיל מעשי - מערכת תפריט</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Menu system</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+:menu
+cls
+echo ========================
+echo    MAIN MENU
+echo ========================
+echo 1. Show system info
+echo 2. Show current time
+echo 3. List files in current folder
+echo 4. Exit
+echo ========================
+set /p choice=Choose option (1-4): 
+
+if "%choice%"=="1" (
+    echo System: %computername%
+    echo User: %username%
+    echo Windows: %windir%
+    pause
+    goto menu
+) else if "%choice%"=="2" (
+    echo Current date and time:
+    echo %date% %time%
+    pause
+    goto menu
+) else if "%choice%"=="3" (
+    echo Files in current folder:
+    dir /b
+    pause
+    goto menu
+) else if "%choice%"=="4" (
+    echo Goodbye!
+    exit
+) else (
+    echo Invalid choice! Please try again.
+    pause
+    goto menu
+)</code></pre>
+        </div>
+      </article>
+
+      <article id="loops" class="section">
+        <h2>לולאות</h2>
+        
+        <h3>מה זה לולאה?</h3>
+        <p>לולאה זה דרך להגיד למחשב "תעשה את זה הרבה פעמים". במקום לכתוב אותה פקודה 100 פעם, אתם כותבים לולאה שתחזור עליה 100 פעם.</p>
+        
+        <h3>לולאת for פשוטה - מעבר על קבצים</h3>
+        <p>הלולאה הכי פשוטה עוברת על קבצים בתיקייה:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Simple file loop</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo All .txt files in current folder:
+for %%f in (*.txt) do echo Found file: %%f
+
+echo.
+echo All .exe files in current folder:
+for %%f in (*.exe) do echo Found program: %%f
+
+echo.
+echo All files that start with 'test':
+for %%f in (test*.*) do echo Found: %%f</code></pre>
+          <div class="output">הסבר: %%f זה "משתנה לולאה" - בכל סיבוב יש בו קובץ אחר</div>
+        </div>
+        
+        <h3>מדוע %%f ולא %f?</h3>
+        <p>בקבצי .bat צריך להשתמש ב-%%f (שני אחוזים). אם אתם כותבים ישירות ב-CMD, זה %f (אחוז אחד). זה חוק מוזר אבל חשוב!</p>
+        
+        <h3>לולאת מספרים - for /l</h3>
+        <p><code>for /l</code> עושה לולאה עם מספרים. התחביר: <code>for /l %%i in (התחלה,קפיצה,סוף)</code></p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Number loops</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo Count from 1 to 5:
+for /l %%i in (1,1,5) do echo Number: %%i
+
+echo.
+echo Count from 10 to 20 by 2:
+for /l %%i in (10,2,20) do echo Number: %%i
+
+echo.
+echo Countdown from 5 to 1:
+for /l %%i in (5,-1,1) do echo %%i
+
+echo.
+echo Create 3 backup folders:
+for /l %%i in (1,1,3) do (
+    mkdir "backup_%%i" 2>nul
+    echo Created folder: backup_%%i
+)</code></pre>
+        </div>
+        
+        <h3>לולאה על תיקיות - for /d</h3>
+        <p><code>for /d</code> עוברת על תיקיות (לא קבצים):</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Directory loops</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo All folders in current directory:
+for /d %%d in (*) do echo Folder: %%d
+
+echo.
+echo All folders starting with 'test':
+for /d %%d in (test*) do echo Found folder: %%d
+
+echo.
+echo Check what's in each folder:
+for /d %%d in (*) do (
+    echo === Contents of %%d ===
+    dir "%%d" /b 2>nul | find /c /v "" >nul
+    if errorlevel 1 (
+        echo [Folder is empty or inaccessible]
+    ) else (
+        dir "%%d" /b
+    )
+    echo.
+)</code></pre>
+        </div>
+        
+        <h3>לולאה רקורסיבית - for /r</h3>
+        <p><code>for /r</code> מחפשת קבצים גם בתיקיות משנה (בכל העץ):</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Recursive file search</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo All .txt files in current folder AND subfolders:
+for /r %%f in (*.txt) do echo Found: %%f
+
+echo.
+echo All .log files everywhere:
+for /r %%f in (*.log) do (
+    echo Log file: %%f
+    echo Size: %%~zf bytes
+    echo Modified: %%~tf
+    echo.
+)</code></pre>
+        </div>
+        
+        <h3>לולאת קריאת קובץ - for /f</h3>
+        <p>זו הלולאה הכי מתקדמת - היא קוראת קובץ שורה אחר שורה:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Reading file line by line</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem First, create a test file
+echo John,25,Manager > employees.txt
+echo Sarah,30,Developer >> employees.txt
+echo Mike,28,Designer >> employees.txt
+
+echo Reading file line by line:
+for /f %%line in (employees.txt) do echo Line: %%line
+
+echo.
+echo Reading with tokens (splitting by comma):
+for /f "tokens=1,2,3 delims=," %%a in (employees.txt) do (
+    echo Name: %%a, Age: %%b, Job: %%c
+)
+
+rem Clean up
+del employees.txt</code></pre>
+          <div class="output">tokens מפצל שורה לחלקים, delims קובע איך לפצל</div>
+        </div>
+        
+        <h3>הרצת פקודות בלולאה - for /f</h3>
+        <p>אתם יכולים להריץ פקודה ולעבור על התוצאות שלה:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Running commands in loop</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo All running processes with 'note' in the name:
+for /f "tokens=1" %%p in ('tasklist /fi "imagename eq note*" /fo csv /nh') do (
+    echo Found process: %%p
+)
+
+echo.
+echo Current system services:
+for /f "tokens=1,2" %%a in ('sc query type^= service state^= all ^| find "SERVICE_NAME"') do (
+    echo Service: %%b
+)
+
+echo.
+echo Free disk space on all drives:
+for /f "tokens=1,2" %%a in ('wmic logicaldisk get caption^,freespace /format:csv ^| find ":"') do (
+    echo Drive %%a has %%b bytes free
+)</code></pre>
+        </div>
+        
+        <h3>משתני לולאה מיוחדים - %%~</h3>
+        <p>עם קבצים, אתם יכולים לחלץ מידע מיוחד:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">File variable modifiers</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo Detailed file information:
+for %%f in (*.txt *.bat) do (
+    echo File: %%f
+    echo - Full path: %%~ff
+    echo - Name only: %%~nf
+    echo - Extension: %%~xf
+    echo - Size: %%~zf bytes
+    echo - Date: %%~tf
+    echo - Folder: %%~dpf
+    echo ================
+)</code></pre>
+          <div class="output">%%~nf = name, %%~xf = extension, %%~zf = size, %%~tf = time</div>
+        </div>
+        
+        <h3>שבירת לולאה עם goto</h3>
+        <p>לפעמים רוצים לעצור לולאה באמצע:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Breaking out of loops</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo Looking for specific file:
+for %%f in (*.*) do (
+    echo Checking: %%f
+    if "%%f"=="important.txt" (
+        echo Found the important file!
+        goto found
+    )
+)
+echo Important file not found
+goto end
+
+:found
+echo File found successfully!
+
+:end
+echo Search complete.</code></pre>
+        </div>
+        
+        <h3>תרגיל מעשי - מחשבון גדלי קבצים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">File size calculator</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+set total=0
+set count=0
+
+echo Calculating total size of all files...
+echo.
+
+for %%f in (*.*) do (
+    set /a count+=1
+    set /a total+=%%~zf
+    echo %%f - %%~zf bytes
+)
+
+echo.
+echo ===============================
+echo Total files: !count!
+echo Total size: !total! bytes
+
+rem Convert to KB and MB
+set /a totalKB=!total!/1024
+set /a totalMB=!total!/1048576
+
+echo Total size: !totalKB! KB
+echo Total size: !totalMB! MB
+echo ===============================</code></pre>
+        </div>
+      </article>
+
+      <article id="files" class="section">
+        <h2>נתיבים וקבצים</h2>
+        
+        <h3>הבנת נתיבים בWindows</h3>
+        <p>נתיב זה כמו כתובת של קובץ או תיקייה. יש שני סוגים:</p>
+        <ul>
+          <li><strong>נתיב מוחלט:</strong> מתחיל עם כונן כמו C:\Users\John\Documents</li>
+          <li><strong>נתיב יחסי:</strong> יחסית למיקום הנוכחי כמו ..\Documents או subfolder\file.txt</li>
+        </ul>
+        
+        <h3>ניווט בין תיקיות - cd</h3>
+        <p><code>cd</code> (Change Directory) מאפשר לעבור בין תיקיות:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Navigation with cd</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo Current location:
+cd
+
+echo.
+echo Going to Windows folder:
+cd /d C:\Windows
+echo Now in: %cd%
+
+echo.
+echo Going to System32:
+cd System32
+echo Now in: %cd%
+
+echo.
+echo Going up one level:
+cd ..
+echo Now in: %cd%
+
+echo.
+echo Going to user's Documents:
+cd /d "%USERPROFILE%\Documents"
+echo Now in: %cd%</code></pre>
+          <div class="output">הסבר: /d מאפשר לעבור בין כוננים שונים</div>
+        </div>
+        
+        <h3>pushd ו-popd - זכירת מיקומים</h3>
+        <p><code>pushd</code> זוכר איפה הייתם ועובר למקום חדש. <code>popd</code> חוזר למקום הקודם:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">pushd and popd</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo Starting location:
+cd
+
+echo.
+echo Going to Windows and remembering current location:
+pushd C:\Windows
+echo Now in: %cd%
+
+echo.
+echo Going to System32:
+pushd System32
+echo Now in: %cd%
+
+echo.
+echo Going back to previous location:
+popd
+echo Back to: %cd%
+
+echo.
+echo Going back to original location:
+popd
+echo Back to: %cd%</code></pre>
+        </div>
+        
+        <h3>רשימת קבצים - dir</h3>
+        <p><code>dir</code> מציג את הקבצים והתיקיות במיקום:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Listing files with dir</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo All files and folders:
+dir
+
+echo.
+echo Only .txt files:
+dir *.txt
+
+echo.
+echo Only folders:
+dir /ad
+
+echo.
+echo Only files (no folders):
+dir /a-d
+
+echo.
+echo Files sorted by size:
+dir /os
+
+echo.
+echo Simple list (names only):
+dir /b</code></pre>
+          <div class="output">/a = attributes, d = directory, s = size, b = bare format</div>
+        </div>
+        
+        <h3>העתקת קבצים - copy</h3>
+        <p><code>copy</code> מעתיק קבצים ממקום אחד לאחר:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Copying files</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create a test file first
+echo This is a test file > testfile.txt
+
+echo Copying single file:
+copy testfile.txt backup.txt
+if exist backup.txt echo Copy successful!
+
+echo.
+echo Copying to another folder:
+mkdir backup_folder 2>nul
+copy testfile.txt backup_folder\
+echo Copied to backup_folder
+
+echo.
+echo Copying multiple files:
+copy *.txt backup_folder\
+echo All .txt files copied
+
+echo.
+echo Copy with confirmation:
+copy testfile.txt confirmed.txt /y
+echo /y skips confirmation prompts</code></pre>
+        </div>
+        
+        <h3>העתקה מתקדמת - xcopy</h3>
+        <p><code>xcopy</code> יותר חזק מ-copy ויכול להעתיק תיקיות שלמות:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Advanced copying with xcopy</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create test structure
+mkdir source_folder\subfolder 2>nul
+echo File 1 > source_folder\file1.txt
+echo File 2 > source_folder\subfolder\file2.txt
+
+echo Copying entire folder structure:
+xcopy source_folder dest_folder /e /i /y
+echo /e = copy subdirectories (including empty)
+echo /i = assume destination is folder
+echo /y = skip confirmations
+
+echo.
+echo Copy only newer files:
+xcopy source_folder dest_folder /d /e /y
+echo /d = copy only newer files
+
+echo.
+echo Copy with verification:
+xcopy source_folder verified_copy /e /v /y
+echo /v = verify copied files
+
+echo.
+echo Results:
+dir dest_folder /s /b</code></pre>
+        </div>
+        
+        <h3>העתקה מקצועית - robocopy</h3>
+        <p><code>robocopy</code> הכלי המתקדם ביותר להעתקת קבצים:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Professional copying with robocopy</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create test data
+mkdir source\folder1\folder2 2>nul
+echo Data > source\file1.txt
+echo More data > source\folder1\file2.txt
+
+echo Basic robocopy:
+robocopy source destination /E
+echo /E = copy subdirectories including empty ones
+
+echo.
+echo Mirror folders (exact copy):
+robocopy source mirror_dest /MIR
+echo /MIR = mirror (deletes files not in source)
+
+echo.
+echo Copy with retry and logging:
+robocopy source reliable_dest /E /R:3 /W:5 /LOG:copy.log
+echo /R:3 = retry 3 times on failure
+echo /W:5 = wait 5 seconds between retries
+echo Check copy.log for details
+
+echo.
+echo Copy only specific file types:
+robocopy source selective_dest *.txt *.doc /S
+echo Copies only .txt and .doc files</code></pre>
+        </div>
+        
+        <h3>העברת קבצים - move</h3>
+        <p><code>move</code> מעביר קבצים (מעתיק ומוחק מהמקור):</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Moving files</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create test files
+echo File A > fileA.txt
+echo File B > fileB.txt
+mkdir archive 2>nul
+
+echo Moving single file:
+move fileA.txt archive\
+if exist archive\fileA.txt echo File moved successfully!
+
+echo.
+echo Moving multiple files:
+echo File C > fileC.txt
+echo File D > fileD.txt
+move file*.txt archive\
+echo All files moved to archive
+
+echo.
+echo Renaming a file (move to same folder with new name):
+echo Original > original.txt
+move original.txt renamed.txt
+echo File renamed from original.txt to renamed.txt
+
+echo.
+echo Contents of archive folder:
+dir archive /b</code></pre>
+        </div>
+        
+        <h3>מחיקת קבצים - del</h3>
+        <p><code>del</code> מוחק קבצים (לא תיקיות):</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Deleting files</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create test files
+echo Temp1 > temp1.tmp
+echo Temp2 > temp2.tmp
+echo Log > app.log
+
+echo Deleting single file:
+del temp1.tmp
+echo temp1.tmp deleted
+
+echo.
+echo Deleting by pattern:
+del *.tmp
+echo All .tmp files deleted
+
+echo.
+echo Quiet deletion (no confirmation):
+echo Another temp > temp.txt
+del /q temp.txt
+echo /q = quiet mode
+
+echo.
+echo Force delete read-only files:
+echo Protected > protected.txt
+attrib +r protected.txt
+del /f protected.txt
+echo /f = force deletion
+
+echo.
+echo Recursive deletion:
+mkdir temp_folder\subfolder 2>nul
+echo Test > temp_folder\subfolder\test.txt
+del /s /q temp_folder\*.*
+echo /s = recursive, deleted files in subfolders</code></pre>
+        </div>
+        
+        <h3>מחיקת תיקיות - rmdir</h3>
+        <p><code>rmdir</code> מוחק תיקיות:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Removing directories</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create test directories
+mkdir empty_folder
+mkdir full_folder\subfolder 2>nul
+echo Content > full_folder\file.txt
+echo More > full_folder\subfolder\file2.txt
+
+echo Removing empty folder:
+rmdir empty_folder
+echo Empty folder removed
+
+echo.
+echo Removing folder with contents:
+rmdir /s /q full_folder
+echo /s = remove subdirectories and files
+echo /q = quiet mode (no confirmation)
+echo Full folder structure removed
+
+echo.
+echo Alternative - using rd (same as rmdir):
+mkdir test_folder 2>nul
+rd test_folder
+echo test_folder removed with rd command</code></pre>
+        </div>
+        
+        <h3>תכונות קבצים - attrib</h3>
+        <p><code>attrib</code> משנה תכונות של קבצים (קריאה בלבד, מוסתר, וכו'):</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">File attributes</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create test file
+echo Important data > important.txt
+
+echo Current attributes:
+attrib important.txt
+
+echo.
+echo Making file read-only:
+attrib +r important.txt
+attrib important.txt
+
+echo.
+echo Making file hidden:
+attrib +h important.txt
+attrib important.txt
+
+echo.
+echo Removing read-only attribute:
+attrib -r important.txt
+attrib important.txt
+
+echo.
+echo Show all attributes:
+echo R = Read-only
+echo H = Hidden  
+echo S = System
+echo A = Archive
+echo + = add attribute
+echo - = remove attribute</code></pre>
+        </div>
+        
+        <h3>תרגיל מעשי - מנגנון גיבוי פשוט</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Simple backup system</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+set source=%USERPROFILE%\Documents
+set backup_root=C:\Backups
+set timestamp=%date:~6,4%-%date:~3,2%-%date:~0,2%_%time:~0,2%-%time:~3,2%
+set backup_dest=%backup_root%\Backup_%timestamp%
+
+echo ================================
+echo    SIMPLE BACKUP SYSTEM
+echo ================================
+echo Source: %source%
+echo Destination: %backup_dest%
+echo.
+
+rem Check if source exists
+if not exist "%source%" (
+    echo ERROR: Source folder not found!
+    pause
+    exit /b 1
+)
+
+rem Create backup directory
+mkdir "%backup_dest%" 2>nul
+if not exist "%backup_dest%" (
+    echo ERROR: Could not create backup folder!
+    pause
+    exit /b 1
+)
+
+echo Starting backup...
+robocopy "%source%" "%backup_dest%" /E /R:3 /W:5 /LOG:"%backup_root%\backup.log"
+
+if %errorlevel% leq 3 (
+    echo.
+    echo ================================
+    echo BACKUP COMPLETED SUCCESSFULLY!
+    echo ================================
+    echo Files backed up to: %backup_dest%
+    echo Log file: %backup_root%\backup.log
+) else (
+    echo.
+    echo ================================
+    echo BACKUP FAILED!
+    echo ================================
+    echo Check log file: %backup_root%\backup.log
+)
+
+pause</code></pre>
+        </div>
+      </article>
+
+      <article id="text" class="section">
+        <h2>עבודה עם טקסט</h2>
+        
+        <h3>קריאת קבצי טקסט - type</h3>
+        <p><code>type</code> הפקודה הבסיסית להצגת תוכן קובץ טקסט:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Reading text files</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create sample text file
+echo Line 1: This is the first line > sample.txt
+echo Line 2: This contains ERROR message >> sample.txt
+echo Line 3: Another normal line >> sample.txt
+echo Line 4: WARNING - something happened >> sample.txt
+echo Line 5: Final line >> sample.txt
+
+echo Reading entire file:
+type sample.txt
+
+echo.
+echo Reading file with line numbers:
+for /f "tokens=*" %%a in ('findstr /n ".*" sample.txt') do echo %%a</code></pre>
+          <div class="output">type מציג את כל התוכן, findstr /n מוסיף מספרי שורות</div>
+        </div>
+        
+        <h3>הצגה מוגבלת - more</h3>
+        <p><code>more</code> מציג קובץ עמוד אחר עמוד (שימושי לקבצים ארוכים):</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Paged reading with more</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create a longer file
+for /l %%i in (1,1,50) do echo This is line %%i >> longfile.txt
+
+echo This file has many lines. Using 'more' to display it:
+echo Press SPACE to continue, Q to quit
+more longfile.txt
+
+rem Clean up
+del longfile.txt</code></pre>
+        </div>
+        
+        <h3>חיפוש פשוט - find</h3>
+        <p><code>find</code> מחפש טקסט מדויק בקבצים:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Simple text search with find</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create sample log file
+echo 2024-01-01 INFO: Application started > app.log
+echo 2024-01-01 DEBUG: Loading configuration >> app.log
+echo 2024-01-01 ERROR: Cannot connect to database >> app.log
+echo 2024-01-01 INFO: Retrying connection >> app.log
+echo 2024-01-01 ERROR: Connection failed again >> app.log
+echo 2024-01-01 WARNING: Using backup database >> app.log
+
+echo === Original file ===
+type app.log
+
+echo.
+echo === Finding ERROR messages ===
+find "ERROR" app.log
+
+echo.
+echo === Case insensitive search ===
+find /i "error" app.log
+
+echo.
+echo === Count occurrences ===
+find /c "ERROR" app.log
+
+echo.
+echo === Show line numbers ===
+find /n "ERROR" app.log</code></pre>
+          <div class="output">/i = ignore case, /c = count, /n = line numbers</div>
+        </div>
+        
+        <h3>חיפוש מתקדם - findstr</h3>
+        <p><code>findstr</code> חזק יותר מ-find ותומך בביטויים רגולריים:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Advanced search with findstr</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create test data
+echo user1@example.com > contacts.txt
+echo john.doe@company.org >> contacts.txt
+echo admin@test.net >> contacts.txt
+echo support@help.co.uk >> contacts.txt
+echo info123@website.com >> contacts.txt
+
+echo === Original file ===
+type contacts.txt
+
+echo.
+echo === Find emails ending with .com ===
+findstr "\.com$" contacts.txt
+
+echo.
+echo === Find emails starting with 'a' or 'i' ===
+findstr /r "^[ai]" contacts.txt
+
+echo.
+echo === Find multiple patterns ===
+findstr "admin support" contacts.txt
+
+echo.
+echo === Search multiple files ===
+echo More data > moredata.txt
+echo admin@server.com >> moredata.txt
+findstr "admin" *.txt
+
+echo.
+echo === Case insensitive regex ===
+findstr /i /r "^[A-Z].*\.ORG$" contacts.txt</code></pre>
+          <div class="output">^ = start of line, $ = end of line, . = any character, [] = character class</div>
+        </div>
+        
+        <h3>שילוב עם pipes - עיבוד מתקדם</h3>
+        <p>שילוב של פקודות עם pipes יוצר כלים עוצמתיים:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Advanced text processing with pipes</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create sample server log
+echo 192.168.1.1 - - [01/Jan/2024:10:00:01] "GET /index.html" 200 > access.log
+echo 192.168.1.2 - - [01/Jan/2024:10:00:02] "GET /about.html" 200 >> access.log
+echo 192.168.1.1 - - [01/Jan/2024:10:00:03] "GET /login.php" 404 >> access.log
+echo 10.0.0.1 - - [01/Jan/2024:10:00:04] "POST /api/data" 500 >> access.log
+echo 192.168.1.3 - - [01/Jan/2024:10:00:05] "GET /admin.php" 403 >> access.log
+
+echo === Original log ===
+type access.log
+
+echo.
+echo === Count total requests ===
+type access.log | find /c "]"
+
+echo.
+echo === Find errors (4xx, 5xx) ===
+type access.log | findstr "[45][0-9][0-9]$"
+
+echo.
+echo === Get unique IP addresses ===
+for /f "tokens=1" %%ip in (access.log) do echo %%ip
+echo (Note: This shows all IPs, not unique ones in basic Batch)
+
+echo.
+echo === Find requests to PHP files ===
+type access.log | findstr "\.php"
+
+echo.
+echo === Get specific status codes ===
+type access.log | findstr "404\|500"</code></pre>
+        </div>
+        
+        <h3>עיבוד CSV/טבלאות - for /f עם tokens</h3>
+        <p>עבודה עם קבצים מובנים כמו CSV:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Processing CSV data</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create CSV file
+echo Name,Age,Department,Salary > employees.csv
+echo John Smith,30,IT,75000 >> employees.csv
+echo Sarah Johnson,25,HR,65000 >> employees.csv
+echo Mike Brown,35,Finance,80000 >> employees.csv
+echo Lisa Davis,28,IT,72000 >> employees.csv
+
+echo === Original CSV ===
+type employees.csv
+
+echo.
+echo === Processing each row ===
+for /f "skip=1 tokens=1,2,3,4 delims=," %%a in (employees.csv) do (
+    echo Employee: %%a
+    echo - Age: %%b years
+    echo - Works in: %%c
+    echo - Salary: $%%d
+    echo ---------------
+)
+
+echo.
+echo === Find IT employees ===
+for /f "skip=1 tokens=1,3 delims=," %%a in (employees.csv) do (
+    if "%%b"=="IT" echo IT Employee: %%a
+)
+
+echo.
+echo === Calculate average age (simplified) ===
+set total=0
+set count=0
+for /f "skip=1 tokens=2 delims=," %%age in (employees.csv) do (
+    set /a total+=%%age
+    set /a count+=1
+)
+set /a average=%total%/%count%
+echo Average age: %average% years</code></pre>
+        </div>
+        
+        <h3>יצירה ועריכת קבצי טקסט</h3>
+        <p>דרכים ליצור ולערוך קבצי טקסט מBatch:</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Creating and editing text files</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create file with multiple lines
+echo Creating configuration file...
+echo # Configuration File > config.ini
+echo [Database] >> config.ini
+echo server=localhost >> config.ini
+echo port=3306 >> config.ini
+echo username=admin >> config.ini
+echo. >> config.ini
+echo [Application] >> config.ini
+echo debug=true >> config.ini
+echo log_level=INFO >> config.ini
+
+echo === Created file ===
+type config.ini
+
+echo.
+echo === Modifying file ===
+rem Create new version with changes
+echo # Updated Configuration File > config_new.ini
+for /f "usebackq tokens=*" %%line in (`type config.ini`) do (
+    set "current_line=%%line"
+    setlocal enabledelayedexpansion
+    if "!current_line!"=="debug=true" (
+        echo debug=false >> config_new.ini
+    ) else (
+        echo !current_line! >> config_new.ini
+    )
+    endlocal
+)
+
+echo === Modified file ===
+type config_new.ini</code></pre>
+        </div>
+        
+        <h3>תרגיל מעשי - מנתח לוגים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Log analyzer tool</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem Create sample log file
+echo 2024-01-01 08:00:01 INFO Application started > system.log
+echo 2024-01-01 08:00:05 DEBUG Loading modules >> system.log
+echo 2024-01-01 08:00:10 INFO User login: john@example.com >> system.log
+echo 2024-01-01 08:05:22 WARNING High memory usage detected >> system.log
+echo 2024-01-01 08:10:15 ERROR Database connection failed >> system.log
+echo 2024-01-01 08:10:16 INFO Retrying database connection >> system.log
+echo 2024-01-01 08:10:20 ERROR Database still unavailable >> system.log
+echo 2024-01-01 08:15:30 WARNING Slow response time >> system.log
+echo 2024-01-01 08:20:45 INFO User logout: john@example.com >> system.log
+echo 2024-01-01 08:25:10 CRITICAL System crash detected >> system.log
+
+echo ================================
+echo       LOG ANALYZER TOOL
+echo ================================
+echo.
+
+echo === Log Statistics ===
+for /f %%i in ('type system.log ^| find /c /v ""') do set total_lines=%%i
+for /f %%i in ('type system.log ^| find /c "ERROR"') do set error_count=%%i
+for /f %%i in ('type system.log ^| find /c "WARNING"') do set warning_count=%%i
+for /f %%i in ('type system.log ^| find /c "CRITICAL"') do set critical_count=%%i
+for /f %%i in ('type system.log ^| find /c "INFO"') do set info_count=%%i
+
+echo Total log entries: %total_lines%
+echo INFO messages: %info_count%
+echo WARNING messages: %warning_count%
+echo ERROR messages: %error_count%
+echo CRITICAL messages: %critical_count%
+
+echo.
+echo === Error Details ===
+type system.log | findstr "ERROR CRITICAL"
+
+echo.
+echo === Time Range Analysis ===
+for /f "tokens=1,2" %%a in ('type system.log') do set first_time=%%a %%b & goto got_first
+:got_first
+for /f "tokens=1,2" %%a in ('type system.log') do set last_time=%%a %%b
+echo First entry: %first_time%
+echo Last entry: %last_time%
+
+echo.
+echo === User Activity ===
+type system.log | findstr "User" | findstr "login logout"
+
+pause</code></pre>
+        </div>
+      </article>
+
+      <article id="io" class="section">
+        <h2>קלט/פלט למשתמש</h2>
+        
+        <h3>מה זה קלט ופלט?</h3>
+        <p>קלט (Input) זה מידע שהמשתמש מכניס לתוכנית, פלט (Output) זה מה שהתוכנית מציגה למשתמש. ב-Batch יש כמה דרכים לקבל מידע מהמשתמש ולהציג לו הודעות.</p>
+        
+        <h3>קבלת קלט מהמשתמש עם set /p</h3>
+        <p>הפקודה <strong>set /p</strong> מאפשרת לכם לקבל טקסט מהמשתמש. זה כמו לשאול שאלה ולחכות לתשובה.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic user input</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Welcome to my program ===
+echo.
+
+rem Get user's name
+set /p user_name=What is your name? 
+echo Hello %user_name%!
+echo.
+
+rem Get user's age
+set /p user_age=How old are you? 
+echo You are %user_age% years old.
+
+rem Get a file path
+set /p file_path=Enter file path: 
+if exist "%file_path%" (
+    echo File exists!
+    echo File size: 
+    dir "%file_path%" | find "bytes"
+) else (
+    echo File does not exist.
+)
+
+pause</code></pre>
+        </div>
+        
+        <h3>בחירה מתוך אפשרויות עם choice</h3>
+        <p>הפקודה <strong>choice</strong> מאפשרת למשתמש לבחור מתוך אפשרויות קבועות. זה יותר נוח כשיש מספר מוגבל של תשובות אפשריות.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Choice menu</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === File Operations Menu ===
+echo 1. Create new file
+echo 2. Delete file  
+echo 3. Copy file
+echo 4. Exit
+echo.
+
+choice /c 1234 /n /m "Choose an option (1-4): "
+
+if errorlevel 4 goto :exit
+if errorlevel 3 goto :copy_file
+if errorlevel 2 goto :delete_file
+if errorlevel 1 goto :create_file
+
+:create_file
+set /p filename=Enter filename: 
+echo This is a new file > "%filename%"
+echo File "%filename%" created successfully!
+goto :end
+
+:delete_file
+set /p filename=Enter filename to delete: 
+if exist "%filename%" (
+    del "%filename%"
+    echo File deleted successfully!
+) else (
+    echo File not found!
+)
+goto :end
+
+:copy_file
+set /p source=Enter source file: 
+set /p destination=Enter destination: 
+copy "%source%" "%destination%"
+goto :end
+
+:exit
+echo Goodbye!
+exit /b 0
+
+:end
+echo.
+pause
+goto :eof</code></pre>
+        </div>
+        
+        <h3>תצוגה מתקדמת עם color ו-title</h3>
+        <p>אפשר לשפר את החוויה של המשתמש על ידי שינוי צבעי המסך וכותרת החלון.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Enhanced display</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+
+rem Set window title
+title My Awesome Batch Program
+
+rem Clear screen and set colors (background + foreground)
+cls
+color 0a
+rem 0=black background, a=light green text
+
+echo ================================
+echo    SYSTEM INFORMATION TOOL
+echo ================================
+echo.
+
+rem Show system info with nice formatting
+echo Computer Name: %COMPUTERNAME%
+echo Username: %USERNAME%
+echo Date: %DATE%
+echo Time: %TIME%
+echo Windows Directory: %WINDIR%
+echo.
+
+rem Ask user what to do next
+echo What would you like to do?
+echo [C]heck disk space
+echo [M]emory info
+echo [N]etwork info
+echo [Q]uit
+echo.
+
+choice /c CMNQ /n /m "Your choice: "
+
+if errorlevel 4 goto :quit
+if errorlevel 3 goto :network
+if errorlevel 2 goto :memory  
+if errorlevel 1 goto :disk
+
+:disk
+cls
+echo === DISK SPACE INFORMATION ===
+dir c:\ | find "bytes free"
+goto :end
+
+:memory
+cls  
+echo === MEMORY INFORMATION ===
+systeminfo | find "Total Physical Memory"
+systeminfo | find "Available Physical Memory"
+goto :end
+
+:network
+cls
+echo === NETWORK INFORMATION ===
+ipconfig | find "IPv4"
+goto :end
+
+:quit
+color 07
+rem Reset to default colors (white on black)
+cls
+echo Thanks for using the program!
+exit /b 0
+
+:end
+echo.
+pause
+goto :eof</code></pre>
+        </div>
+        
+        <h3>טיפים חשובים לעבודה עם I/O</h3>
+        <ul>
+          <li><strong>תמיד בדקו קלט</strong>: ודאו שהמשתמש הכניס מידע תקף לפני שאתם משתמשים בו</li>
+          <li><strong>הודעות ברורות</strong>: כתבו הודעות שמסבירות בדיוק מה אתם רוצים מהמשתמש</li>
+          <li><strong>טיפול בשגיאות</strong>: מה קורה אם המשתמש לוחץ Enter בלי להכניס כלום?</li>
+          <li><strong>צבעים בזהירות</strong>: לא כל המחשבים תומכים בכל הצבעים</li>
+        </ul>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Input validation example</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+title Input Validation Demo
+
+:get_number
+set /p number=Enter a number between 1-10: 
+
+rem Check if input is empty
+if "%number%"=="" (
+    echo Error: You must enter a number!
+    goto :get_number
+)
+
+rem Check if it's actually a number (basic check)
+echo %number%| findstr /r "^[1-9][0-9]*$" >nul
+if errorlevel 1 (
+    echo Error: Please enter a valid number!
+    goto :get_number
+)
+
+rem Check range
+if %number% LSS 1 (
+    echo Error: Number must be 1 or higher!
+    goto :get_number
+)
+if %number% GTR 10 (
+    echo Error: Number must be 10 or lower!
+    goto :get_number
+)
+
+echo Great! You entered: %number%
+echo This is a valid number in the range 1-10.
+pause</code></pre>
+        </div>
+      </article>
+
+      <article id="shell" class="section">
+        <h2>הרצת תוכניות ו-Shell</h2>
+        
+        <h3>מה זה הרצת תוכניות חיצוניות?</h3>
+        <p>לפעמים אתם רוצים שהתוכנית שלכם תפעיל תוכניות אחרות - כמו Notepad, Calculator, או אפילו תוכניות שכתבתם בעצמכם. יש כמה דרכים לעשות את זה.</p>
+        
+        <h3>call - קריאה לתוכנית אחרת ומתנה לסיום</h3>
+        <p>הפקודה <strong>call</strong> מפעילה תוכנית אחרת ומחכה שהיא תסתיים לפני שהיא ממשיכה. זה שימושי כשאתם רוצים להפעיל batch אחר.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Using call command</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Main Script Started ===
+
+echo Step 1: Running backup script...
+call backup.bat
+echo Backup completed!
+
+echo Step 2: Running cleanup script...
+call cleanup.bat  
+echo Cleanup completed!
+
+echo Step 3: Running final script...
+call "C:\MyScripts\final process.bat"
+echo All tasks completed!
+
+echo === Main Script Finished ===
+pause</code></pre>
+        </div>
+        
+        <h3>start - הפעלה במקביל (ללא המתנה)</h3>
+        <p>הפקודה <strong>start</strong> מפעילה תוכנית וממשיכה מיד בלי לחכות. זה מאפשר להפעיל כמה דברים במקביל.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Using start command</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Opening multiple programs ===
+
+rem Open websites
+start "" "https://www.google.com"
+start "" "https://www.github.com"
+
+rem Open programs
+start notepad.exe
+start calc.exe
+start mspaint.exe
+
+rem Open files
+start "" "C:\Users\%USERNAME%\Documents"
+start "" "document.txt"
+
+rem Run another batch file in new window
+start "Backup Process" backup.bat
+
+rem Wait a bit then show completion message
+timeout /t 3 /nobreak >nul
+echo All programs started!
+pause</code></pre>
+        </div>
+        
+        <h3>הפעלת תוכניות עם פרמטרים</h3>
+        <p>אפשר לשלוח פרמטרים (arguments) לתוכניות שאתם מפעילים, בדיוק כמו בשורת הפקודה רגילה.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Programs with parameters</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Running programs with parameters ===
+
+rem Open specific file in notepad
+start notepad.exe "C:\temp\myfile.txt"
+
+rem Run command prompt with specific command
+start cmd.exe /k "dir C:\ && echo Done!"
+
+rem Open PowerShell and run command
+start powershell.exe -Command "Get-Process | Where-Object {$_.Name -like '*chrome*'}"
+
+rem Run batch file with parameters
+start "Data Processing" process_data.bat input.txt output.txt
+
+rem Open URL in default browser
+start "" "https://www.example.com/search?q=batch+tutorial"
+
+echo Programs started with parameters!
+pause</code></pre>
+        </div>
+        
+        <h3>בדיקת קיום תוכנית לפני הפעלה</h3>
+        <p>לפעמים כדאי לבדוק אם התוכנית קיימת לפני שמנסים להפעיל אותה, כדי למנוע שגיאות.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Checking program existence</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Smart Program Launcher ===
+
+rem Check if notepad exists
+where notepad.exe >nul 2>&1
+if %errorlevel%==0 (
+    echo Notepad found! Opening...
+    start notepad.exe
+) else (
+    echo Notepad not found in PATH
+)
+
+rem Check if specific file exists before opening
+set "target_file=C:\temp\important.txt"
+if exist "%target_file%" (
+    echo File found! Opening in notepad...
+    start notepad.exe "%target_file%"
+) else (
+    echo File "%target_file%" not found.
+    echo Creating empty file...
+    echo. > "%target_file%"
+    start notepad.exe "%target_file%"
+)
+
+rem Check if custom program exists
+set "my_program=C:\MyPrograms\tool.exe"
+if exist "%my_program%" (
+    echo Running custom program...
+    start "My Tool" "%my_program%" --config config.ini
+) else (
+    echo Custom program not found at: %my_program%
+    echo Please install the program first.
+)
+
+pause</code></pre>
+        </div>
+        
+        <h3>עבודה עם exit codes</h3>
+        <p>כשתוכנית מסתיימת, היא מחזירה קוד יציאה (exit code). 0 אומר הצלחה, מספר אחר אומר שגיאה.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Handling exit codes</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Exit Code Handling ===
+
+rem Run a command and check its result
+echo Testing if file exists...
+dir "nonexistent_file.txt" >nul 2>&1
+
+if %errorlevel%==0 (
+    echo Success: File exists!
+) else (
+    echo Error: File not found (exit code: %errorlevel%)
+)
+
+echo.
+echo Running backup process...
+call backup_script.bat
+
+rem Check if backup succeeded
+if %errorlevel%==0 (
+    echo ✓ Backup completed successfully!
+    echo Proceeding with next step...
+    call next_process.bat
+) else (
+    echo ✗ Backup failed with error code: %errorlevel%
+    echo Stopping process for safety.
+    exit /b 1
+)
+
+echo All processes completed successfully!
+exit /b 0</code></pre>
+        </div>
+        
+        <h3>טיפים מתקדמים</h3>
+        <ul>
+          <li><strong>השתמשו ב-call</strong> כשאתם רוצים לחכות לסיום התוכנית</li>
+          <li><strong>השתמשו ב-start</strong> כשאתם רוצים להמשיך מיד</li>
+          <li><strong>תמיד בדקו exit codes</strong> אחרי פעולות חשובות</li>
+          <li><strong>השתמשו במירכאות</strong> כשיש רווחים בנתיבים</li>
+          <li><strong>where command</strong> מוצא איפה תוכנית נמצאת ב-PATH</li>
+        </ul>
+      </article>
+
+      <article id="errors" class="section">
+        <h2>קודי יציאה ו-errorlevel</h2>
+        
+        <h3>מה זה error level?</h3>
+        <p><strong>Error level</strong> זה מספר שכל תוכנית מחזירה כשהיא מסתיימת. 0 אומר "הכל בסדר", מספר גדול יותר אומר שמשהו השתבש. זה כמו הודעת סטטוס מהתוכנית.</p>
+        
+        <h3>בדיקת errorlevel בסיסית</h3>
+        <p>אפשר לבדוק את ה-errorlevel אחרי כל פקודה כדי לדעת אם היא הצליחה או נכשלה.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic errorlevel checking</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Error Level Testing ===
+
+rem Try to copy a file
+copy "source.txt" "destination.txt"
+
+rem Check if copy succeeded
+if %errorlevel%==0 (
+    echo ✓ File copied successfully!
+) else (
+    echo ✗ Copy failed! Error code: %errorlevel%
+)
+
+echo.
+rem Try to find a file
+find "important text" myfile.txt
+
+if %errorlevel%==0 (
+    echo ✓ Text found in file!
+) else (
+    echo ✗ Text not found or file doesn't exist
+)
+
+pause</code></pre>
+        </div>
+        
+        <h3>שימוש ב-&& ו-|| (טיפול מהיר בשגיאות)</h3>
+        <p>יש דרך מהירה לטפל בהצלחה או כישלון: <strong>&&</strong> אומר "אם הצליח", <strong>||</strong> אומר "אם נכשל".</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Quick error handling</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Quick Error Handling ===
+
+rem If command succeeds, run next command
+echo Checking disk space...
+dir C:\ >nul && echo ✓ Disk accessible || echo ✗ Cannot access disk
+
+rem Chain multiple success conditions
+mkdir "temp_folder" && echo ✓ Folder created && cd "temp_folder" && echo ✓ Entered folder
+
+rem Handle failure immediately
+copy "important.txt" "backup.txt" || (
+    echo ✗ Backup failed! 
+    echo Creating empty backup file...
+    echo. > "backup.txt"
+)
+
+rem More complex error handling
+echo Testing network connection...
+ping -n 1 google.com >nul 2>&1 && (
+    echo ✓ Internet connection OK
+    echo Downloading updates...
+    rem wget or curl commands here
+) || (
+    echo ✗ No internet connection
+    echo Working in offline mode...
+)
+
+pause</code></pre>
+        </div>
+        
+        <h3>הגדרת error levels בתוכנית שלכם</h3>
+        <p>אתם יכולים להגדיר את ה-error level שהתוכנית שלכם מחזירה עם <strong>exit /b</strong>.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Setting custom error levels</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === File Processor ===
+
+rem Get input from user
+set /p filename=Enter filename to process: 
+
+rem Check if file exists
+if not exist "%filename%" (
+    echo Error: File "%filename%" not found!
+    exit /b 1
+)
+
+rem Check if file is empty
+for %%F in ("%filename%") do (
+    if %%~zF==0 (
+        echo Error: File is empty!
+        exit /b 2
+    )
+)
+
+rem Check file extension
+echo %filename% | findstr /i "\.txt$" >nul
+if %errorlevel%==1 (
+    echo Warning: File is not a .txt file
+    choice /c YN /m "Continue anyway?"
+    if errorlevel 2 exit /b 3
+)
+
+rem Process the file
+echo Processing file...
+type "%filename%" | find /c /v "" > temp_count.txt
+set /p line_count=< temp_count.txt
+del temp_count.txt
+
+echo ✓ File processed successfully!
+echo Lines in file: %line_count%
+
+rem Success exit code
+exit /b 0</code></pre>
+        </div>
+        
+        <h3>בדיקת טווחי error levels</h3>
+        <p>לפעמים צריך לבדוק אם ה-error level בטווח מסוים, לא רק מספר ספציפי.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Error level ranges</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Advanced Error Level Handling ===
+
+rem Run a command that might return various error codes
+findstr /i "search_term" *.txt
+
+rem Store the error level
+set "last_error=%errorlevel%"
+
+echo Command returned error level: %last_error%
+
+rem Check specific ranges
+if %last_error%==0 (
+    echo ✓ Text found successfully!
+) else if %last_error%==1 (
+    echo ⚠ Text not found in any files
+) else if %last_error% GEQ 2 (
+    echo ✗ Error occurred during search
+    if %last_error%==2 echo Reason: File access error
+    if %last_error%==3 echo Reason: Invalid pattern
+    if %last_error% GTR 3 echo Reason: Unknown error
+)
+
+echo.
+echo === Choice Command Error Levels ===
+echo What is your favorite color?
+echo 1. Red
+echo 2. Green  
+echo 3. Blue
+echo 4. Other
+
+choice /c 1234 /n /m "Choose (1-4): "
+
+rem Choice command returns error level based on selection
+if errorlevel 4 echo You chose: Other
+if errorlevel 3 if not errorlevel 4 echo You chose: Blue
+if errorlevel 2 if not errorlevel 3 echo You chose: Green  
+if errorlevel 1 if not errorlevel 2 echo You chose: Red
+
+pause</code></pre>
+        </div>
+        
+        <h3>יצירת מערכת logging לשגיאות</h3>
+        <p>בתוכניות גדולות כדאי לשמור לוג של כל השגיאות שקורות.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Error logging system</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem Setup logging
+set "logfile=error_log_%date:~-4%%date:~3,2%%date:~0,2%.txt"
+echo === Starting batch process at %time% === >> "%logfile%"
+
+echo === Batch Process with Error Logging ===
+
+rem Function to log errors
+goto :start
+
+:log_error
+echo [%time%] ERROR %errorlevel%: %~1 >> "%logfile%"
+echo ✗ %~1
+goto :eof
+
+:log_success  
+echo [%time%] SUCCESS: %~1 >> "%logfile%"
+echo ✓ %~1
+goto :eof
+
+:start
+rem Test 1: Create directory
+mkdir "test_folder" 2>nul
+if %errorlevel%==0 (
+    call :log_success "Created test folder"
+) else (
+    call :log_error "Failed to create test folder"
+)
+
+rem Test 2: Copy files
+copy "source.txt" "test_folder\" >nul 2>&1
+if %errorlevel%==0 (
+    call :log_success "Copied source file"
+) else (
+    call :log_error "Failed to copy source file"
+)
+
+rem Test 3: Network test
+ping -n 1 8.8.8.8 >nul 2>&1
+if %errorlevel%==0 (
+    call :log_success "Network connectivity OK"
+) else (
+    call :log_error "Network connectivity failed"
+)
+
+echo.
+echo Process completed. Check log file: %logfile%
+type "%logfile%"
+pause</code></pre>
+        </div>
+        
+        <h3>דברים חשובים לזכור</h3>
+        <ul>
+          <li><strong>0 = הצלחה</strong>: כל מספר אחר אומר שמשהו השתבש</li>
+          <li><strong>בדקו errorlevel</strong> אחרי פעולות חשובות</li>
+          <li><strong>השתמשו ב-&&</strong> ו-<strong>||</strong> לטיפול מהיר</li>
+          <li><strong>exit /b</strong> מחזיר error level ספציפי</li>
+          <li><strong>שמרו logs</strong> בתוכניות גדולות</li>
+        </ul>
+      </article>
+
+      <article id="network" class="section">
+        <h2>רשת ו-HTTP</h2>
+        
+        <h3>מה זה עבודה עם רשת ב-Batch?</h3>
+        <p>עבודה עם רשת אומר לבדוק חיבור לאינטרנט, להוריד קבצים, לשלוח בקשות לשרתים ולקבל מידע. Windows מודרני כולל כלים מעולים לזה.</p>
+        
+        <h3>בדיקת קישוריות רשת</h3>
+        <p>לפני שעושים משהו ברשת, כדאי לבדוק שיש חיבור לאינטרנט.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Network connectivity tests</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Network Connectivity Tests ===
+
+rem Test basic internet connectivity
+echo Testing internet connection...
+ping -n 1 8.8.8.8 >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ Internet connection is working
+) else (
+    echo ✗ No internet connection
+    goto :no_internet
+)
+
+rem Test DNS resolution
+echo Testing DNS resolution...
+nslookup google.com >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ DNS is working
+) else (
+    echo ✗ DNS resolution failed
+)
+
+rem Test specific website
+echo Testing website accessibility...
+ping -n 1 github.com >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ GitHub is accessible
+) else (
+    echo ⚠ GitHub is not reachable
+)
+
+rem Show network configuration
+echo.
+echo === Network Configuration ===
+ipconfig | findstr /i "IPv4"
+ipconfig | findstr /i "Gateway"
+
+goto :end
+
+:no_internet
+echo Please check your network connection and try again.
+
+:end
+pause</code></pre>
+        </div>
+        
+        <h3>שימוש ב-curl להורדת קבצים וAPI calls</h3>
+        <p><strong>curl</strong> זה כלי מעולה להורדת קבצים ולשליחת בקשות HTTP. הוא כלול ב-Windows 10/11 החדשים.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">File downloads with curl</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === File Download Demo ===
+
+rem Check if curl is available
+where curl >nul 2>&1
+if %errorlevel%==1 (
+    echo Error: curl is not available on this system
+    echo Please install curl or use a newer Windows version
+    pause
+    exit /b 1
+)
+
+echo curl is available! Starting downloads...
+echo.
+
+rem Download a simple text file
+echo Downloading sample text file...
+curl -s -o "sample.txt" "https://httpbin.org/uuid"
+if exist "sample.txt" (
+    echo ✓ Downloaded sample.txt
+    echo Content:
+    type "sample.txt"
+) else (
+    echo ✗ Failed to download sample.txt
+)
+
+echo.
+rem Download with progress bar
+echo Downloading larger file with progress...
+curl -# -o "large_file.json" "https://jsonplaceholder.typicode.com/posts"
+
+rem Check download size
+for %%F in ("large_file.json") do (
+    echo Downloaded file size: %%~zF bytes
+)
+
+echo.
+rem Download with custom headers
+echo Downloading with custom headers...
+curl -s -H "User-Agent: MyBatchScript/1.0" -o "headers_test.json" "https://httpbin.org/headers"
+
+echo All downloads completed!
+pause</code></pre>
+        </div>
+        
+        <h3>עבודה עם APIs</h3>
+        <p>אפשר להשתמש ב-curl כדי לשלוח בקשות GET, POST ו-PUT לשרתים ולקבל נתונים.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">API interactions</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === API Demo ===
+
+rem GET request - fetch data
+echo Fetching user data...
+curl -s "https://jsonplaceholder.typicode.com/users/1" > user_data.json
+
+if exist "user_data.json" (
+    echo ✓ User data received:
+    type "user_data.json"
+    echo.
+)
+
+rem POST request - send data
+echo Sending new post...
+curl -s -X POST "https://jsonplaceholder.typicode.com/posts" ^
+     -H "Content-Type: application/json" ^
+     -d "{\"title\":\"My Batch Post\",\"body\":\"Posted from batch script\",\"userId\":1}" ^
+     > post_response.json
+
+if exist "post_response.json" (
+    echo ✓ Post created:
+    type "post_response.json"
+    echo.
+)
+
+rem GET with query parameters
+echo Fetching filtered data...
+curl -s "https://jsonplaceholder.typicode.com/posts?userId=1" > user_posts.json
+
+if exist "user_posts.json" (
+    echo ✓ User posts received
+    echo Number of posts:
+    type "user_posts.json" | find /c "id"
+)
+
+rem Check HTTP status codes
+echo.
+echo === Testing HTTP Status Codes ===
+curl -s -w "Status: %%{http_code}\n" -o nul "https://httpbin.org/status/200"
+curl -s -w "Status: %%{http_code}\n" -o nul "https://httpbin.org/status/404"
+
+pause</code></pre>
+        </div>
+        
+        <h3>הורדת קבצים עם בדיקות בטיחות</h3>
+        <p>כשמורידים קבצים, כדאי לוודא שההורדה הצליחה ושהקובץ תקין.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Safe file downloads</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+echo === Safe Download Script ===
+
+rem Configuration
+set "download_url=https://httpbin.org/json"
+set "output_file=downloaded_data.json"
+set "max_retries=3"
+set "retry_count=0"
+
+:download_loop
+set /a retry_count+=1
+echo.
+echo Attempt !retry_count! of %max_retries%...
+
+rem Download with timeout and error checking
+curl -s --max-time 30 --connect-timeout 10 -o "%output_file%" "%download_url%"
+set "curl_error=!errorlevel!"
+
+if !curl_error!==0 (
+    rem Check if file exists and has content
+    if exist "%output_file%" (
+        for %%F in ("%output_file%") do (
+            if %%~zF GTR 0 (
+                echo ✓ Download successful!
+                echo File size: %%~zF bytes
+                echo File content preview:
+                type "%output_file%"
+                goto :download_success
+            ) else (
+                echo ✗ Downloaded file is empty
+            )
+        )
+    ) else (
+        echo ✗ Download failed - file not created
+    )
+) else (
+    echo ✗ curl failed with error code: !curl_error!
+)
+
+rem Retry logic
+if !retry_count! LSS %max_retries% (
+    echo Waiting 5 seconds before retry...
+    timeout /t 5 /nobreak >nul
+    goto :download_loop
+) else (
+    echo ✗ All download attempts failed!
+    goto :download_failed
+)
+
+:download_success
+echo.
+echo Download completed successfully!
+goto :end
+
+:download_failed
+echo.
+echo Download failed after %max_retries% attempts.
+echo Please check your internet connection and try again.
+exit /b 1
+
+:end
+pause</code></pre>
+        </div>
+        
+        <h3>בדיקת מהירות אינטרנט פשוטה</h3>
+        <p>אפשר לבדוק מהירות אינטרנט בסיסית על ידי מדידת זמן הורדה של קובץ.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Simple internet speed test</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+echo === Simple Internet Speed Test ===
+
+rem Test file (1MB)
+set "test_url=https://httpbin.org/bytes/1048576"
+set "test_file=speed_test.bin"
+
+echo Starting speed test...
+echo Test file size: 1 MB
+echo.
+
+rem Record start time
+set "start_time=%time%"
+
+rem Download test file
+curl -s --max-time 60 -o "%test_file%" "%test_url%"
+
+rem Record end time
+set "end_time=%time%"
+
+rem Check if download succeeded
+if not exist "%test_file%" (
+    echo Speed test failed - could not download test file
+    pause
+    exit /b 1
+)
+
+rem Calculate download time (simplified)
+echo Download started at: %start_time%
+echo Download finished at: %end_time%
+
+rem Check file size
+for %%F in ("%test_file%") do (
+    set "file_size=%%~zF"
+)
+
+echo Downloaded size: !file_size! bytes
+
+rem Clean up
+del "%test_file%" 2>nul
+
+echo.
+echo Speed test completed!
+echo Note: This is a basic test. For accurate results, use dedicated speed test tools.
+
+pause</code></pre>
+        </div>
+        
+        <h3>טיפים חשובים לעבודה עם רשת</h3>
+        <ul>
+          <li><strong>תמיד בדקו קישוריות</strong> לפני ניסיון להוריד קבצים</li>
+          <li><strong>השתמשו ב-timeouts</strong> כדי למנוע תלייה של התוכנית</li>
+          <li><strong>בדקו HTTP status codes</strong> כדי לוודא שהבקשה הצליחה</li>
+          <li><strong>שמרו נתונים רגישים בטוח</strong> - אל תכתבו סיסמאות בקוד</li>
+          <li><strong>curl זמין רק ב-Windows 10+</strong> - בדקו זמינות לפני שימוש</li>
+        </ul>
+      </article>
+
+      <article id="env" class="section">
+        <h2>משתני סביבה ו-PATH</h2>
+        
+        <h3>מה זה משתני סביבה?</h3>
+        <p>משתני סביבה (Environment Variables) זה כמו משתנים גלובליים של המחשב. הם שמורים בזיכרון ואפשר לגשת אליהם מכל תוכנית. לדוגמה: <strong>%USERNAME%</strong> מכיל את שם המשתמש.</p>
+        
+        <h3>צפייה ועריכה של משתני סביבה</h3>
+        <p>אפשר לראות, ליצור ולשנות משתני סביבה בעזרת פקודות <strong>set</strong> ו-<strong>setx</strong>.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Viewing and setting environment variables</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Environment Variables Demo ===
+
+rem Show all environment variables
+echo All environment variables:
+set | more
+
+echo.
+echo === Common System Variables ===
+echo Computer Name: %COMPUTERNAME%
+echo Username: %USERNAME%  
+echo User Profile: %USERPROFILE%
+echo Windows Directory: %WINDIR%
+echo System Drive: %SYSTEMDRIVE%
+echo Program Files: %PROGRAMFILES%
+echo Temp Directory: %TEMP%
+echo Path: %PATH%
+
+echo.
+echo === Creating Temporary Variables ===
+rem Temporary variables (exist only in this session)
+set MY_TEMP_VAR=Hello World
+set SCRIPT_VERSION=1.0
+set LOG_LEVEL=DEBUG
+
+echo My temp variable: %MY_TEMP_VAR%
+echo Script version: %SCRIPT_VERSION%
+echo Log level: %LOG_LEVEL%
+
+echo.
+echo === Variable Arithmetic ===
+set /a NUMBER1=10
+set /a NUMBER2=5
+set /a RESULT=%NUMBER1% + %NUMBER2%
+echo %NUMBER1% + %NUMBER2% = %RESULT%
+
+pause</code></pre>
+        </div>
+        
+        <h3>יצירת משתנים קבועים עם setx</h3>
+        <p><strong>setx</strong> יוצר משתנים שנשארים גם אחרי שהתוכנית מסתיימת. הם זמינים בכל פעם שתפתחו CMD חדש.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Persistent environment variables</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Creating Persistent Environment Variables ===
+
+rem WARNING: These changes are permanent!
+echo Creating permanent environment variables...
+
+rem Set user-level environment variables
+setx MY_TOOLS_PATH "C:\MyTools" >nul
+setx MY_SCRIPTS_PATH "C:\MyScripts" >nul  
+setx MY_APP_CONFIG "production" >nul
+
+if %errorlevel%==0 (
+    echo ✓ User environment variables created:
+    echo   MY_TOOLS_PATH = C:\MyTools
+    echo   MY_SCRIPTS_PATH = C:\MyScripts
+    echo   MY_APP_CONFIG = production
+) else (
+    echo ✗ Failed to create environment variables
+)
+
+echo.
+echo === Adding to PATH (be careful!) ===
+rem Get current PATH and add our directory
+set "NEW_PATH_ENTRY=C:\MyTools"
+
+rem Check if already in PATH
+echo %PATH% | find /i "%NEW_PATH_ENTRY%" >nul
+if %errorlevel%==0 (
+    echo Path entry already exists in PATH
+) else (
+    echo Adding %NEW_PATH_ENTRY% to user PATH...
+    rem Add to user PATH (not system PATH for safety)
+    setx PATH "%PATH%;%NEW_PATH_ENTRY%" >nul
+    if %errorlevel%==0 (
+        echo ✓ Path added successfully
+        echo ⚠ You need to restart CMD to see the change
+    ) else (
+        echo ✗ Failed to add to PATH
+    )
+)
+
+echo.
+echo === Important Notes ===
+echo - These changes take effect in NEW command prompts
+echo - Current session still uses old values
+echo - Use 'set' to see current session values
+echo - Use Registry Editor to remove unwanted variables
+
+pause</code></pre>
+        </div>
+        
+        <h3>עבודה מתקדמת עם PATH</h3>
+        <p>ה-PATH זה רשימה של תיקיות שבהן Windows מחפש תוכניות. כשאתם כותבים "notepad" הוא מוצא אותה ב-PATH.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">PATH manipulation and analysis</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+echo === PATH Analysis and Manipulation ===
+
+rem Show PATH directories one by one
+echo Current PATH directories:
+set "counter=0"
+for %%p in ("%PATH:;=" "%") do (
+    set /a counter+=1
+    echo !counter!. %%~p
+)
+
+echo.
+echo === Checking for Specific Programs ===
+rem Check if common programs are in PATH
+set "programs=notepad.exe calc.exe cmd.exe powershell.exe git.exe python.exe node.exe"
+
+for %%prog in (%programs%) do (
+    where %%prog >nul 2>&1
+    if !errorlevel!==0 (
+        echo ✓ %%prog found in PATH
+        where %%prog | head -1
+    ) else (
+        echo ✗ %%prog not found in PATH
+    )
+)
+
+echo.
+echo === Temporary PATH Modification ===
+rem Add temporary directory to PATH for this session only
+set "TEMP_PATH=C:\TempTools"
+set "PATH=%PATH%;%TEMP_PATH%"
+
+echo Added %TEMP_PATH% to PATH temporarily
+echo New PATH includes %TEMP_PATH%
+
+rem Verify the addition
+echo %PATH% | find "%TEMP_PATH%" >nul
+if %errorlevel%==0 (
+    echo ✓ Temporary PATH modification successful
+) else (
+    echo ✗ PATH modification failed
+)
+
+echo.
+echo === PATH Cleanup Check ===
+rem Check for duplicate or invalid PATH entries
+echo Checking for issues in PATH...
+
+set "issues_found=0"
+for %%p in ("%PATH:;=" "%") do (
+    set "current_path=%%~p"
+    rem Remove quotes if present
+    set "current_path=!current_path:"=!"
+    
+    if not exist "!current_path!" (
+        echo ⚠ Invalid PATH entry: !current_path!
+        set /a issues_found+=1
+    )
+)
+
+if %issues_found%==0 (
+    echo ✓ No invalid PATH entries found
+) else (
+    echo Found %issues_found% invalid PATH entries
+    echo Consider cleaning up your PATH variable
+)
+
+pause</code></pre>
+        </div>
+        
+        <h3>משתני סביבה לקונפיגורציה</h3>
+        <p>אפשר להשתמש במשתני סביבה כדי להגדיר התנהגות של התוכנית שלכם ללא שינוי הקוד.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Configuration with environment variables</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+echo === Configuration with Environment Variables ===
+
+rem Set default values if environment variables don't exist
+if not defined APP_LOG_LEVEL set "APP_LOG_LEVEL=INFO"
+if not defined APP_DATA_DIR set "APP_DATA_DIR=%USERPROFILE%\AppData\MyApp"
+if not defined APP_MAX_RETRIES set "APP_MAX_RETRIES=3"
+if not defined APP_TIMEOUT set "APP_TIMEOUT=30"
+
+echo Current configuration:
+echo - Log Level: %APP_LOG_LEVEL%
+echo - Data Directory: %APP_DATA_DIR%
+echo - Max Retries: %APP_MAX_RETRIES%
+echo - Timeout: %APP_TIMEOUT% seconds
+
+echo.
+echo === Using Configuration ===
+
+rem Create data directory if it doesn't exist
+if not exist "%APP_DATA_DIR%" (
+    echo Creating data directory: %APP_DATA_DIR%
+    mkdir "%APP_DATA_DIR%" 2>nul
+    if !errorlevel!==0 (
+        echo ✓ Data directory created
+    ) else (
+        echo ✗ Failed to create data directory
+    )
+)
+
+rem Use log level to determine output
+if /i "%APP_LOG_LEVEL%"=="DEBUG" (
+    echo [DEBUG] Debug logging enabled
+    echo [DEBUG] Data dir: %APP_DATA_DIR%
+    echo [DEBUG] Max retries: %APP_MAX_RETRIES%
+)
+
+if /i "%APP_LOG_LEVEL%"=="INFO" (
+    echo [INFO] Application started with INFO logging
+)
+
+if /i "%APP_LOG_LEVEL%"=="ERROR" (
+    echo [ERROR] Only error messages will be shown
+)
+
+rem Simulate an operation with retries
+echo.
+echo === Operation with Retry Logic ===
+set "retry_count=0"
+:retry_operation
+set /a retry_count+=1
+
+if /i "%APP_LOG_LEVEL%"=="DEBUG" echo [DEBUG] Attempt %retry_count% of %APP_MAX_RETRIES%
+
+rem Simulate operation (this will "fail" for demo)
+set /a random_success=%RANDOM% %% 4
+if %random_success%==0 (
+    echo ✓ Operation succeeded on attempt %retry_count%
+    goto :operation_success
+)
+
+if %retry_count% LSS %APP_MAX_RETRIES% (
+    if /i "%APP_LOG_LEVEL%"=="DEBUG" echo [DEBUG] Operation failed, retrying...
+    timeout /t 1 /nobreak >nul
+    goto :retry_operation
+) else (
+    echo ✗ Operation failed after %APP_MAX_RETRIES% attempts
+)
+
+:operation_success
+echo.
+echo === To Change Configuration ===
+echo Run these commands before running this script:
+echo   set APP_LOG_LEVEL=DEBUG
+echo   set APP_DATA_DIR=C:\MyCustomPath  
+echo   set APP_MAX_RETRIES=5
+echo   set APP_TIMEOUT=60
+
+pause</code></pre>
+        </div>
+        
+        <h3>טיפים חשובים</h3>
+        <ul>
+          <li><strong>set</strong> - משתנה זמני לסשן הנוכחי בלבד</li>
+          <li><strong>setx</strong> - משתנה קבוע שנשמר גם אחרי ריסטרט</li>
+          <li><strong>זהירות עם PATH</strong> - גיבוי לפני שינויים</li>
+          <li><strong>setx מוגבל ל-1024 תווים</strong> - PATH ארוך עלול להתקצר</li>
+          <li><strong>משתנים חדשים</strong> זמינים רק ב-CMD חדש</li>
+          <li><strong>השתמשו במירכאות</strong> כשיש רווחים בערכים</li>
+        </ul>
+      </article>
+
+      <article id="uac" class="section">
+        <h2>הרשאות ו-UAC</h2>
+        
+        <h3>מה זה UAC והרשאות Administrator?</h3>
+        <p>UAC (User Account Control) זה מנגנון אבטחה של Windows שמונע מתוכניות לשנות דברים חשובים במחשב בלי אישור. לפעמים batch script צריך הרשאות Administrator כדי לעבוד.</p>
+        
+        <h3>בדיקה אם הסקריפט רץ עם הרשאות Admin</h3>
+        <p>לפני שניסים לעשות פעולות שדורשות Admin, כדאי לבדוק אם יש לנו הרשאות.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Check admin privileges</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Checking Administrator Privileges ===
+
+rem Method 1: Try to access admin-only information
+net session >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ Running with Administrator privileges
+    goto :admin_tasks
+) else (
+    echo ✗ Not running with Administrator privileges
+    goto :user_tasks
+)
+
+:admin_tasks
+echo.
+echo === Administrator Tasks Available ===
+echo - Can modify system files
+echo - Can install/uninstall programs  
+echo - Can modify registry
+echo - Can manage services
+echo - Can access all user files
+
+rem Show admin-level system info
+echo.
+echo System Information (Admin View):
+wmic computersystem get TotalPhysicalMemory,NumberOfProcessors
+wmic os get Caption,Version,BuildNumber
+
+goto :end
+
+:user_tasks
+echo.
+echo === Limited User Tasks ===
+echo - Can modify files in user directories
+echo - Can run most programs
+echo - Cannot modify system settings
+echo - Cannot install programs globally
+
+echo.
+echo To run with admin privileges:
+echo 1. Right-click this batch file
+echo 2. Select "Run as administrator"
+echo 3. Or use the auto-elevation script below
+
+:end
+pause</code></pre>
+        </div>
+        
+        <h3>הרמת הרשאות אוטומטית</h3>
+        <p>אפשר לגרום לסקריפט לבקש הרשאות Administrator אוטומטית אם הוא לא רץ איתן.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Auto-elevation script</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+echo === Auto-Elevation Demo ===
+
+rem Check if we have admin rights
+net session >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ Already running with admin privileges
+    goto :main_program
+)
+
+echo Requesting Administrator privileges...
+echo This will show a UAC prompt.
+
+rem Re-run this script as Administrator
+powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs -ArgumentList '%*'"
+exit /b
+
+:main_program
+echo.
+echo === Now Running with Admin Rights ===
+title Admin Batch Script
+color 0a
+
+echo Performing admin-level tasks...
+
+rem Example admin tasks
+echo.
+echo 1. Checking system services:
+sc query | find "SERVICE_NAME" | head -5
+
+echo.
+echo 2. System file information:
+dir %WINDIR%\System32\drivers | head -5
+
+echo.
+echo 3. Registry access test:
+reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion" /v ProductName 2>nul
+
+echo.
+echo 4. Windows features:
+dism /online /get-features | find "Feature Name" | head -5 2>nul
+
+echo.
+echo ✓ Admin tasks completed successfully!
+echo Press any key to exit...
+pause >nul</code></pre>
+        </div>
+        
+        <h3>בדיקות הרשאות מתקדמות</h3>
+        <p>אפשר לבדוק הרשאות ספציפיות לפני ביצוע פעולות שונות.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Advanced permission checks</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+echo === Advanced Permission Checks ===
+
+rem Check if we can write to system directories
+echo Testing write permissions...
+
+rem Test Windows directory
+echo test > "%WINDIR%\test.tmp" 2>nul
+if exist "%WINDIR%\test.tmp" (
+    echo ✓ Can write to Windows directory
+    del "%WINDIR%\test.tmp" 2>nul
+) else (
+    echo ✗ Cannot write to Windows directory
+)
+
+rem Test Program Files
+echo test > "%PROGRAMFILES%\test.tmp" 2>nul
+if exist "%PROGRAMFILES%\test.tmp" (
+    echo ✓ Can write to Program Files
+    del "%PROGRAMFILES%\test.tmp" 2>nul
+) else (
+    echo ✗ Cannot write to Program Files
+)
+
+rem Test registry write access
+echo.
+echo Testing registry access...
+
+reg add "HKLM\SOFTWARE\TestKey" /f >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ Can write to HKLM registry
+    reg delete "HKLM\SOFTWARE\TestKey" /f >nul 2>&1
+) else (
+    echo ✗ Cannot write to HKLM registry
+)
+
+rem Test service management
+echo.
+echo Testing service management...
+sc query Spooler >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ Can query services
+    
+    rem Try to stop/start a service (safely test with Spooler)
+    sc queryex Spooler | find "STATE" | find "RUNNING" >nul
+    if %errorlevel%==0 (
+        echo ✓ Print Spooler service is running
+    ) else (
+        echo ⚠ Print Spooler service is not running
+    )
+) else (
+    echo ✗ Cannot access service information
+)
+
+echo.
+echo === Permission Summary ===
+whoami /groups | find "S-1-16-12288" >nul
+if %errorlevel%==0 (
+    echo ✓ Running with High Integrity Level (Admin)
+) else (
+    echo ✗ Running with Standard Integrity Level (User)
+)
+
+whoami /priv | find "SeDebugPrivilege" >nul
+if %errorlevel%==0 (
+    echo ✓ Has debug privileges
+) else (
+    echo ✗ No debug privileges
+)
+
+pause</code></pre>
+        </div>
+        
+        <h3>עבודה בטוחה עם הרשאות</h3>
+        <p>כשעובדים עם הרשאות Admin, חשוב לעשות את זה בזהירות ולבדוק כל פעולה.</p>
+        
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Safe admin operations</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+title Safe Admin Operations
+
+rem Check admin rights first
+net session >nul 2>&1 || (
+    echo This script requires Administrator privileges.
+    echo Please run as Administrator.
+    pause
+    exit /b 1
+)
+
+echo === Safe Administrator Operations ===
+echo ⚠ Running with admin privileges - be careful!
+echo.
+
+rem Create backup before making changes
+set "backup_dir=%TEMP%\batch_backup_%DATE:~-4%%DATE:~3,2%%DATE:~0,2%"
+mkdir "%backup_dir%" 2>nul
+
+echo Backup directory: %backup_dir%
+echo.
+
+rem Safe system file operation
+echo === Safe File Operation ===
+set "target_file=%WINDIR%\System32\drivers\etc\hosts"
+
+if exist "%target_file%" (
+    echo Backing up hosts file...
+    copy "%target_file%" "%backup_dir%\hosts.backup" >nul
+    if !errorlevel!==0 (
+        echo ✓ Backup created: %backup_dir%\hosts.backup
+        
+        rem Show current hosts file content (last 10 lines)
+        echo Current hosts file (last 10 lines):
+        powershell -Command "Get-Content '%target_file%' | Select-Object -Last 10"
+        
+        echo.
+        choice /c YN /m "Do you want to add a test entry to hosts file?"
+        if !errorlevel!==1 (
+            echo # Test entry added by batch script >> "%target_file%"
+            echo 127.0.0.1 test.local >> "%target_file%"
+            echo ✓ Test entry added to hosts file
+            echo To restore: copy "%backup_dir%\hosts.backup" "%target_file%"
+        )
+    ) else (
+        echo ✗ Failed to create backup - aborting operation
+    )
+) else (
+    echo ✗ Hosts file not found at expected location
+)
+
+echo.
+echo === Safe Service Operation ===
+rem Check if a service exists before trying to modify it
+sc query "Print Spooler" >nul 2>&1
+if %errorlevel%==0 (
+    echo ✓ Print Spooler service found
+    sc queryex "Print Spooler" | find "STATE"
+    echo.
+    echo Service operation completed safely.
+) else (
+    echo ⚠ Print Spooler service not found
+)
+
+echo.
+echo === Cleanup ===
+echo Backup files are saved in: %backup_dir%
+echo Clean up backup files? (they contain original system files)
+choice /c YN /m "Delete backup files?"
+if %errorlevel%==1 (
+    rmdir /s /q "%backup_dir%" 2>nul
+    echo ✓ Backup files deleted
+) else (
+    echo ✓ Backup files preserved
+)
+
+echo.
+echo Script completed safely.
+pause</code></pre>
+        </div>
+        
+        <h3>טיפים לעבודה בטוחה עם הרשאות</h3>
+        <ul>
+          <li><strong>תמיד בדקו הרשאות</strong> לפני פעולות מסוכנות</li>
+          <li><strong>צרו גיבויים</strong> לפני שינוי קבצי מערכת</li>
+          <li><strong>השתמשו ב-choice</strong> לאישור פעולות חשובות</li>
+          <li><strong>בדקו תוצאות</strong> של כל פעולה עם errorlevel</li>
+          <li><strong>אל תריצו כ-Admin</strong> אלא אם באמת צריך</li>
+          <li><strong>תיעדו מה עשיתם</strong> למקרה שצריך לבטל</li>
+        </ul>
+      </article>
+
+      <article id="tasks" class="section">
+        <h2>משימות מתוזמנות</h2>
+        <p>schtasks מאפשר יצירה, עדכון ומחיקה של משימות מתוזמנות. שימושי לגיבויים, ניקוי קבצים זמניים, בדיקות מערכת ועוד.</p>
+        
+        <h3>יצירת משימות בסיסיות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic task creation</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Daily backup at 9 AM
+schtasks /create /sc daily /tn "DailyBackup" /tr "C:\Scripts\backup.bat" /st 09:00
+
+rem Weekly cleanup on Sundays at 11 PM
+schtasks /create /sc weekly /d SUN /tn "WeeklyCleanup" /tr "C:\Scripts\cleanup.bat" /st 23:00
+
+rem Monthly report on first day of month
+schtasks /create /sc monthly /mo first /d SUN /tn "MonthlyReport" /tr "C:\Scripts\report.bat" /st 08:00</code></pre>
+        </div>
+        
+        <h3>משימות מתקדמות עם הרשאות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Advanced tasks with privileges</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Task with highest privileges (admin)
+schtasks /create /sc daily /tn "AdminTask" /tr "C:\Scripts\admin.bat" /st 02:00 /rl HIGHEST
+
+rem Task for specific user
+schtasks /create /sc daily /tn "UserTask" /tr "C:\Scripts\user.bat" /st 10:00 /ru "DOMAIN\username" /rp password
+
+rem Task on system startup
+schtasks /create /sc onstart /tn "StartupTask" /tr "C:\Scripts\startup.bat" /delay 0000:30</code></pre>
+        </div>
+        
+        <h3>ניהול משימות קיימות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Managing existing tasks</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem List all tasks
+schtasks /query /fo table
+
+rem Query specific task
+schtasks /query /tn "DailyBackup" /v
+
+rem Enable/disable task
+schtasks /change /tn "DailyBackup" /enable
+schtasks /change /tn "DailyBackup" /disable
+
+rem Run task immediately
+schtasks /run /tn "DailyBackup"
+
+rem Delete task
+schtasks /delete /tn "DailyBackup" /f</code></pre>
+        </div>
+        
+        <h3>משימות עם תנאים מתקדמים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Conditional tasks</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Task that runs only if computer is idle
+schtasks /create /sc daily /tn "IdleTask" /tr "C:\Scripts\maintenance.bat" /st 14:00 /i 10
+
+rem Task with multiple triggers
+schtasks /create /sc onlogon /tn "LoginTask" /tr "C:\Scripts\login.bat"
+
+rem Task that runs when event occurs (Windows 10+)
+schtasks /create /sc onevent /ec Security /mo "*[System[EventID=4624]]" /tn "SecurityAlert" /tr "C:\Scripts\security.bat"</code></pre>
+        </div>
+        
+        <p><strong>טיפים חשובים:</strong></p>
+        <ul>
+          <li><code>/f</code> - כפיית פעולה ללא שאלות</li>
+          <li><code>/ru SYSTEM</code> - הרצה כמשתמש מערכת</li>
+          <li><code>/sc ONCE</code> - הרצה חד פעמית</li>
+          <li>השתמשו ב-Task Scheduler GUI לבדיקה ועריכה מתקדמת</li>
+        </ul>
+        <h3>ניהול משימות קיימות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Task management</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Query all tasks
+schtasks /query /fo table
+
+rem Query specific task
+schtasks /query /tn "DailyBackup" /v
+
+rem Run task immediately
+schtasks /run /tn "DailyBackup"
+
+rem Disable task
+schtasks /change /tn "DailyBackup" /disable
+
+rem Enable task
+schtasks /change /tn "DailyBackup" /enable
+
+rem Delete task
+schtasks /delete /tn "DailyBackup" /f</code></pre>
+        </div>
+        <h3>דוגמאות משימות שימושיות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Useful task examples</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Clean temp files daily at 3 AM
+schtasks /create /sc daily /tn "CleanTemp" /tr "del /q /s %TEMP%\*" /st 03:00
+
+rem Check disk space weekly
+schtasks /create /sc weekly /tn "DiskCheck" /tr "powershell -Command \"Get-WmiObject -Class Win32_LogicalDisk | Format-Table -AutoSize > C:\Logs\diskspace.log\"" /st 07:00
+
+rem Download updates info daily
+schtasks /create /sc daily /tn "UpdateCheck" /tr "curl -s https://api.github.com/repos/microsoft/terminal/releases/latest > C:\Logs\updates.json" /st 12:00</code></pre>
+        </div>
+      </article>
+
+      <article id="registry" class="section">
+        <h2>רישום</h2>
+        <p>Registry הוא מסד הנתונים המרכזי של Windows. זהירות! שינויים שגויים יכולים לפגוע במערכת.</p>
+        
+        <h3>פעולות בסיסיות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic registry operations</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Query a key
+reg query "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer"
+
+rem Add a string value
+reg add "HKCU\Software\MyApp" /v "AppName" /t REG_SZ /d "My Application" /f
+
+rem Add a DWORD value
+reg add "HKCU\Software\MyApp" /v "Version" /t REG_DWORD /d 1 /f
+
+rem Query specific value
+reg query "HKCU\Software\MyApp" /v "AppName"</code></pre>
+        </div>
+        
+        <h3>סוגי ערכים שונים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Different value types</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem String value (REG_SZ)
+reg add "HKCU\Software\MyApp" /v "UserName" /t REG_SZ /d "John Doe" /f
+
+rem Multi-string value (REG_MULTI_SZ)
+reg add "HKCU\Software\MyApp" /v "FileTypes" /t REG_MULTI_SZ /d "txt\0doc\0pdf" /f
+
+rem Binary value (REG_BINARY)
+reg add "HKCU\Software\MyApp" /v "Config" /t REG_BINARY /d "01020304" /f
+
+rem Expandable string (REG_EXPAND_SZ)
+reg add "HKCU\Software\MyApp" /v "TempPath" /t REG_EXPAND_SZ /d "%TEMP%\MyApp" /f</code></pre>
+        </div>
+        
+        <h3>ייבוא וייצוא Registry</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Import/Export registry</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Export a key to .reg file
+reg export "HKCU\Software\MyApp" "C:\Backup\MyApp.reg"
+
+rem Import from .reg file
+reg import "C:\Backup\MyApp.reg"
+
+rem Create backup before changes
+reg export "HKCU\Software\MyApp" "C:\Backup\MyApp_backup_%date:~-4%%date:~3,2%%date:~0,2%.reg"</code></pre>
+        </div>
+        
+        <h3>בדיקת קיום וטיפול בשגיאות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Error handling</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Check if key exists
+reg query "HKCU\Software\MyApp" >nul 2>&1
+if %errorlevel% == 0 (
+    echo Key exists
+) else (
+    echo Key does not exist, creating...
+    reg add "HKCU\Software\MyApp" /f
+)
+
+rem Safe deletion with confirmation
+reg query "HKCU\Software\MyApp" >nul 2>&1
+if %errorlevel% == 0 (
+    echo Deleting MyApp registry key...
+    reg delete "HKCU\Software\MyApp" /f
+)</code></pre>
+        </div>
+        
+        <p><strong>אזהרות חשובות:</strong></p>
+        <ul>
+          <li><code>/f</code> - כפיית פעולה ללא אישור (זהירות!)</li>
+          <li>תמיד גבו מפתחות חשובים לפני שינוי</li>
+          <li>השתמשו ב-HKCU במקום HKLM כשאפשר</li>
+          <li>בדקו הרשאות לפני שינויים ב-HKLM</li>
+        </ul>
+      </article>
+
+      <article id="pwsh" class="section">
+        <h2>שיתוף עם PowerShell</h2>
+        <p>PowerShell מציע יכולות מתקדמות שאין ב-Batch. ניתן לקרוא ל-PowerShell מתוך Batch ולהעביר נתונים ביניהם.</p>
+        
+        <h3>הרצת פקודות PowerShell בסיסיות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic PowerShell commands</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Get system info
+powershell -Command "Get-ComputerInfo | Select-Object WindowsProductName, TotalPhysicalMemory"
+
+rem Compress files
+powershell -Command "Compress-Archive -Path 'C:\MyFolder\*' -DestinationPath 'C:\archive.zip'"
+
+rem Download file
+powershell -Command "Invoke-WebRequest -Uri 'https://example.com/file.zip' -OutFile 'download.zip'"</code></pre>
+        </div>
+        
+        <h3>העברת משתנים בין Batch ל-PowerShell</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Variable passing</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set "username=John"
+set "folder=C:\Users\%username%\Documents"
+
+rem Pass Batch variable to PowerShell
+powershell -Command "& {param($path) Get-ChildItem $path} -path '%folder%'"
+
+rem Get PowerShell output to Batch variable
+for /f "delims=" %%i in ('powershell -Command "Get-Date -Format 'yyyy-MM-dd'"') do set "today=%%i"
+echo Today is: %today%</code></pre>
+        </div>
+        
+        <h3>סקריפטים מתקדמים עם PowerShell</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Advanced PowerShell integration</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Run PowerShell script file
+powershell -ExecutionPolicy Bypass -File "C:\Scripts\myscript.ps1"
+
+rem JSON processing
+powershell -Command "Get-Content 'config.json' | ConvertFrom-Json | Select-Object -ExpandProperty version"
+
+rem WMI queries
+powershell -Command "Get-WmiObject -Class Win32_LogicalDisk | Where-Object {$_.FreeSpace -lt 1GB} | Select-Object DeviceID, FreeSpace"
+
+rem Registry operations
+powershell -Command "Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer' -Name 'Shell'"</code></pre>
+        </div>
+        
+        <h3>טיפול בשגיאות וחזרת קודים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Error handling</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Run PowerShell with error handling
+powershell -Command "try { Get-Service 'NonExistentService' } catch { exit 1 }"
+if %errorlevel% neq 0 (
+    echo PowerShell command failed
+    exit /b 1
+)
+
+rem Capture both output and errors
+powershell -Command "Get-Process 'notepad' 2>&1" > output.txt
+if %errorlevel% neq 0 (
+    echo Process not found
+)</code></pre>
+        </div>
+        
+        <p><strong>טיפים שימושיים:</strong></p>
+        <ul>
+          <li><code>-ExecutionPolicy Bypass</code> - מעקף מדיניות הרצה</li>
+          <li><code>-NoProfile</code> - טוען מהר יותר ללא פרופיל</li>
+          <li><code>-WindowStyle Hidden</code> - הסתרת חלון PowerShell</li>
+          <li>השתמשו ב-JSON להעברת נתונים מורכבים</li>
+        </ul>
+      </article>
+
+      <article id="encoding" class="section">
+        <h2>קידוד וטקסט</h2>
+        <p>Batch רגיש לקידוד הקובץ. עבור עברית ותווים מיוחדים, חשוב להבין איך לטפל בקידוד נכון.</p>
+        
+        <h3>הגדרת קידוד במסוף</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Console encoding</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Display current code page
+chcp
+
+rem Set UTF-8 encoding (65001)
+chcp 65001
+
+rem Set Hebrew encoding (1255)
+chcp 1255
+
+rem Common code pages:
+rem 437 - US English
+rem 1252 - Western European
+rem 65001 - UTF-8</code></pre>
+        </div>
+        
+        <h3>עבודה עם קבצי טקסט בעברית</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Hebrew text files</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Set Hebrew encoding
+chcp 1255
+
+rem Create Hebrew text file
+echo שלום עולם > hebrew.txt
+echo זהו טקסט בעברית >> hebrew.txt
+
+rem Read Hebrew file
+type hebrew.txt
+
+rem Convert encoding using PowerShell
+powershell -Command "Get-Content 'hebrew.txt' -Encoding Default | Out-File 'hebrew_utf8.txt' -Encoding UTF8"</code></pre>
+        </div>
+        
+        <h3>טיפול בתווים מיוחדים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Special characters</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Escape special characters
+echo This is a "quoted" string
+echo This has ^& special characters ^< ^> ^|
+
+rem Unicode characters (requires UTF-8)
+chcp 65001
+echo Unicode: ★ ♥ ♦ ♣ ♠
+
+rem Preserve special chars in variables
+set "text=File ^& Folder"
+echo %text%</code></pre>
+        </div>
+        
+        <h3>קבצי Batch עם קידוד נכון</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Proper batch file encoding</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem For Hebrew in batch files:
+rem 1. Save file as ANSI (Windows-1255) OR
+rem 2. Save as UTF-8 with BOM and use chcp 65001
+
+rem Best practice for mixed content:
+chcp 65001 >nul 2>&1
+
+rem Now you can use Hebrew safely
+echo שלום, זהו batch script עם עברית
+echo Hello, this is English text
+echo Mixing עברית and English works!</code></pre>
+        </div>
+        
+        <p><strong>המליצות לקידוד:</strong></p>
+        <ul>
+          <li><strong>עברית בלבד:</strong> שמרו ב-ANSI (Windows-1255)</li>
+          <li><strong>מעורב עברית/אנגלית:</strong> UTF-8 עם BOM + <code>chcp 65001</code></li>
+          <li><strong>אנגלית בלבד:</strong> ANSI (CP437/1252) מספיק</li>
+          <li>תמיד בדקו את התוצאה במסוף לאחר שינוי קידוד</li>
+        </ul>
+      </article>
+
+      <article id="iexpress" class="section">
+        <h2>אריזה ל-EXE ואייקון</h2>
+        <p>IExpress הוא כלי של Microsoft ליצירת חבילות התקנה ו-self-extracting archives. שימושי להפצת scripts עם קבצים נלווים.</p>
+        
+        <h3>יצירת EXE פשוט מ-Batch</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic EXE creation</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Step 1: Run iexpress.exe
+rem Step 2: Choose "Create new Self Extraction Directive file"
+rem Step 3: Choose "Extract files and run an installation command"
+rem Step 4: Add your .bat file
+rem Step 5: Choose installation command (your .bat file)
+rem Step 6: Set window options and finish
+
+rem Alternative: Create SED file for automation
+echo Creating IExpress automation file...
+(
+echo [Version]
+echo Class=IEXPRESS
+echo SEDVersion=3
+echo [Options]
+echo PackagePurpose=InstallApp
+echo ShowInstallProgramWindow=0
+echo HideExtractAnimation=1
+echo UseLongFileName=1
+echo InsideCompressed=0
+echo CAB_FixedSize=0
+echo CAB_ResvCodeSigning=0
+echo RebootMode=N
+echo InstallPrompt=%%InstallPrompt%%
+echo DisplayLicense=%%DisplayLicense%%
+echo FinishMessage=%%FinishMessage%%
+echo TargetName=%%TargetName%%
+echo FriendlyName=%%FriendlyName%%
+echo AppLaunched=%%AppLaunched%%
+echo PostInstallCmd=%%PostInstallCmd%%
+echo AdminQuietInstCmd=%%AdminQuietInstCmd%%
+echo FILE0="myscript.bat"
+echo [Strings]
+echo InstallPrompt=Do you want to run this script?
+echo DisplayLicense=
+echo FinishMessage=Script execution completed
+echo TargetName=C:\Output\myscript.exe
+echo FriendlyName=My Batch Script
+echo AppLaunched=myscript.bat
+echo PostInstallCmd=^<None^>
+echo AdminQuietInstCmd=myscript.bat
+) > script.sed</code></pre>
+        </div>
+        
+        <h3>הוספת אייקון וחתימה דיגיטלית</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Icon and signing</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Add icon to EXE (requires Resource Hacker or similar)
+"C:\Program Files\Resource Hacker\ResourceHacker.exe" -open "myscript.exe" -save "myscript_with_icon.exe" -action addoverwrite -res "icon.ico" -mask ICONGROUP,1,
+
+rem Sign the EXE (requires code signing certificate)
+signtool sign /f "certificate.pfx" /p "password" /t "http://timestamp.digicert.com" "myscript.exe"
+
+rem Verify signature
+signtool verify /pa "myscript.exe"</code></pre>
+        </div>
+        
+        <h3>יצירת תיקיית הפצה מלאה</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Distribution package</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Create distribution folder with all dependencies
+mkdir "Distribution"
+copy "myscript.bat" "Distribution\"
+copy "config.ini" "Distribution\"
+copy "data\*" "Distribution\data\"
+
+rem Create installer with IExpress
+rem Include all files in the SED file:
+rem FILE0="myscript.bat"
+rem FILE1="config.ini"
+rem FILE2="data\file1.txt"
+rem FILE3="data\file2.txt"
+
+echo Distribution package created in 'Distribution' folder
+echo Use IExpress to create single EXE installer</code></pre>
+        </div>
+        
+        <p><strong>אזהרות ושיקולי אבטחה:</strong></p>
+        <ul>
+          <li><strong>False Positives:</strong> אנטי-וירוס עלול לחשוד ב-EXE שנוצר</li>
+          <li><strong>חתימה דיגיטלית:</strong> משפרת אמון ומונעת אזהרות אבטחה</li>
+          <li><strong>שקיפות:</strong> הסבירו למשתמשים מה ה-EXE עושה</li>
+          <li><strong>גיבוי:</strong> שמרו את קבצי ה-SED לעדכונים עתידיים</li>
+        </ul>
+      </article>
+
+      <article id="security" class="section">
+        <h2>אבטחה ו-Best Practices</h2>
+        <p>כתיבת Batch scripts בטוחים חשובה במיוחד כאשר הם רצים עם הרשאות מוגברות או מטפלים בקלט משתמש.</p>
+        
+        <h3>ולידציה של קלט משתמש</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Input validation</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem Validate file path input
+set /p "filepath=Enter file path: "
+
+rem Check if path contains dangerous characters
+echo !filepath! | findstr /C:".." >nul && (
+    echo Error: Path contains unsafe characters
+    exit /b 1
+)
+
+rem Verify file exists before processing
+if not exist "!filepath!" (
+    echo Error: File does not exist
+    exit /b 1
+)
+
+rem Safe processing
+echo Processing: !filepath!</code></pre>
+        </div>
+        
+        <h3>הרצה עם הרשאות מינימליות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Minimal privileges</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Check if running as admin when needed
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    if "%1"=="admin" (
+        echo This script requires administrator privileges
+        pause
+        exit /b 1
+    )
+)
+
+rem Work in user temp directory instead of system directories
+set "WORKDIR=%TEMP%\MyScript_%RANDOM%"
+mkdir "%WORKDIR%"
+cd /d "%WORKDIR%"
+
+rem Clean up on exit
+:cleanup
+rmdir /s /q "%WORKDIR%" 2>nul</code></pre>
+        </div>
+        
+        <h3>הגנה מפני injection attacks</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Injection prevention</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem BAD: Never do this with user input
+rem set /p "filename=Enter filename: "
+rem del %filename%
+
+rem GOOD: Validate and escape input
+set /p "filename=Enter filename: "
+
+rem Remove dangerous characters
+set "filename=!filename:&=!"
+set "filename=!filename:|=!"
+set "filename=!filename:>=!"
+set "filename=!filename:<=!"
+set "filename=!filename:^=!"
+
+rem Verify it's just a filename, not a path
+echo !filename! | findstr /C:"\" >nul && (
+    echo Error: Only filenames allowed, not paths
+    exit /b 1
+)
+
+rem Safe deletion with confirmation
+if exist "!filename!" (
+    echo About to delete: !filename!
+    choice /M "Are you sure"
+    if !errorlevel! equ 1 del "!filename!"
+)</code></pre>
+        </div>
+        
+        <h3>לוגים ומעקב</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Logging and auditing</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set "LOGFILE=%TEMP%\script_log_%date:~-4%%date:~3,2%%date:~0,2%.txt"
+
+rem Log script start
+echo [%date% %time%] Script started by %USERNAME% >> "%LOGFILE%"
+
+rem Log important actions
+echo [%date% %time%] Processing file: %1 >> "%LOGFILE%"
+
+rem Log errors
+if %errorlevel% neq 0 (
+    echo [%date% %time%] ERROR: Command failed with code %errorlevel% >> "%LOGFILE%"
+)
+
+rem Log script end
+echo [%date% %time%] Script completed >> "%LOGFILE%"</code></pre>
+        </div>
+        
+        <h3>גיבוי לפני שינויים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Backup before changes</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+set "BACKUP_DIR=%TEMP%\Backup_%date:~-4%%date:~3,2%%date:~0,2%_%time:~0,2%%time:~3,2%%time:~6,2%"
+set "BACKUP_DIR=%BACKUP_DIR: =0%"
+
+rem Create backup before making changes
+if exist "%1" (
+    mkdir "%BACKUP_DIR%"
+    copy "%1" "%BACKUP_DIR%\" >nul
+    echo Backup created: %BACKUP_DIR%
+)
+
+rem Make changes here
+echo Making changes to %1...
+
+rem Verify changes worked
+if %errorlevel% neq 0 (
+    echo Error occurred, restoring from backup...
+    copy "%BACKUP_DIR%\*" "." >nul
+    rmdir /s /q "%BACKUP_DIR%"
+    exit /b 1
+)
+
+echo Changes completed successfully
+echo Backup available at: %BACKUP_DIR%</code></pre>
+        </div>
+        
+        <p><strong>כללי אבטחה חשובים:</strong></p>
+        <ul>
+          <li><strong>אל תבטחו בקלט משתמש:</strong> תמיד ולדו וסננו</li>
+          <li><strong>הרשאות מינימליות:</strong> רוצו רק עם ההרשאות הנדרשות</li>
+          <li><strong>גיבויים:</strong> צרו גיבוי לפני שינויים חשובים</li>
+          <li><strong>לוגים:</strong> תעדו פעולות חשובות לביקורת</li>
+          <li><strong>נתיבים בטוחים:</strong> עבדו ב-TEMP ולא בתיקיות מערכת</li>
+          <li><strong>ניקיון:</strong> מחקו קבצים זמניים ורגישים</li>
+        </ul>
+      </article>
+
+      <article id="debug" class="section">
+        <h2>Debugging</h2>
+        <p>איתור שגיאות ב-Batch יכול להיות מאתגר. הנה כלים וטכניקות לאיתור ותיקון בעיות.</p>
+        
+        <h3>הדפסות Debug בסיסיות</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Basic debugging output</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem Enable debug mode with environment variable
+if "%DEBUG%"=="1" (
+    echo [DEBUG] Script started
+    echo [DEBUG] Arguments: %*
+)
+
+set "filename=%1"
+if "%DEBUG%"=="1" echo [DEBUG] Processing file: !filename!
+
+rem Your script logic here...
+
+if "%DEBUG%"=="1" echo [DEBUG] Script completed</code></pre>
+        </div>
+        
+        <h3>מעקב אחר משתנים</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Variable tracking</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem Debug function to print all variables
+:debug_vars
+if "%DEBUG%"=="1" (
+    echo === Variables Debug ===
+    echo counter=!counter!
+    echo filename=!filename!
+    echo status=!status!
+    echo =======================
+)
+goto :eof
+
+rem Example usage
+set "counter=1"
+call :debug_vars
+
+rem Process files
+for %%f in (*.txt) do (
+    set "filename=%%f"
+    set /a "counter+=1"
+    call :debug_vars
+    rem Process file here...
+)</code></pre>
+        </div>
+        
+        <h3>איתור שגיאות עם ERRORLEVEL</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Error level debugging</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem Function to check and report errors
+:check_error
+if !errorlevel! neq 0 (
+    echo [ERROR] Command failed with code !errorlevel!
+    echo [ERROR] Last command: %~1
+    if "%DEBUG%"=="1" pause
+    exit /b !errorlevel!
+)
+goto :eof
+
+rem Example usage
+copy "source.txt" "destination.txt"
+call :check_error "copy command"
+
+xcopy "folder1" "folder2" /E /Y
+call :check_error "xcopy command"
+
+echo All commands completed successfully</code></pre>
+        </div>
+        
+        <p><strong>טיפים לאיתור שגיאות:</strong></p>
+        <ul>
+          <li><strong>השתמשו ב-@echo on:</strong> לראות כל פקודה שרצה</li>
+          <li><strong>בדקו ERRORLEVEL:</strong> אחרי כל פקודה חשובה</li>
+          <li><strong>הפרידו לפונקציות:</strong> בדקו כל חלק בנפרד</li>
+          <li><strong>PAUSE לבדיקות:</strong> עצרו בנקודות חשובות</li>
+          <li><strong>קבצי לוג:</strong> תעדו מה קורה לצורך ניתוח</li>
+          <li><strong>משתני Debug:</strong> הפעילו/כבו debug בקלות</li>
+        </ul>
+      </article>
+
+      <article id="practical" class="section">
+        <h2>דוגמאות מעשיות</h2>
+        <p>סקריפטים שימושיים לחיי היומיום — גיבויים, ניקוי מערכת, ניהול קבצים, והתקנות.</p>
+        
+        <h3>סקריפט גיבוי אוטומטי מתקדם</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Advanced backup script</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+rem Configuration
+set "SOURCE=C:\Users\%USERNAME%\Documents"
+set "DEST=D:\Backups"
+set "MAX_BACKUPS=7"
+set "TIMESTAMP=%date:~-4%%date:~3,2%%date:~0,2%_%time:~0,2%%time:~3,2%"
+set "TIMESTAMP=%TIMESTAMP: =0%"
+set "BACKUP_DIR=%DEST%\Backup_%TIMESTAMP%"
+set "LOGFILE=%DEST%\backup_%TIMESTAMP%.log"
+
+echo Starting backup at %date% %time% > "%LOGFILE%"
+echo Source: %SOURCE% >> "%LOGFILE%"
+echo Destination: %BACKUP_DIR% >> "%LOGFILE%"
+
+rem Create backup directory
+mkdir "%BACKUP_DIR%" 2>nul
+if %errorlevel% neq 0 (
+    echo ERROR: Cannot create backup directory >> "%LOGFILE%"
+    exit /b 1
+)
+
+rem Perform backup with robocopy
+robocopy "%SOURCE%" "%BACKUP_DIR%" /E /R:3 /W:5 /XD "node_modules" ".git" /XF "*.tmp" "thumbs.db" /LOG+:"%LOGFILE%"
+
+rem Check result
+if %errorlevel% leq 3 (
+    echo Backup completed successfully >> "%LOGFILE%"
+    
+    rem Clean old backups
+    echo Cleaning old backups... >> "%LOGFILE%"
+    for /f "skip=%MAX_BACKUPS%" %%d in ('dir "%DEST%\Backup_*" /b /od') do (
+        echo Removing old backup: %%d >> "%LOGFILE%"
+        rmdir /s /q "%DEST%\%%d"
+    )
+) else (
+    echo Backup failed with error %errorlevel% >> "%LOGFILE%"
+    exit /b %errorlevel%
+)
+
+echo Backup process completed. Log: %LOGFILE%</code></pre>
+        </div>
+        
+        <h3>ניקוי מערכת מקיף</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Comprehensive system cleanup</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+echo Starting system cleanup...
+set "FREED_SPACE=0"
+
+rem Function to calculate freed space
+:calc_space
+for /f "tokens=3" %%a in ('dir C:\ /-c ^| find "bytes free"') do set "CURRENT_FREE=%%a"
+set "CURRENT_FREE=%CURRENT_FREE:,=%"
+goto :eof
+
+call :calc_space
+set "INITIAL_FREE=%CURRENT_FREE%"
+
+rem Clean temp files
+echo Cleaning temporary files...
+del /f /s /q "%TEMP%\*" 2>nul
+del /f /s /q "C:\Windows\Temp\*" 2>nul
+del /f /s /q "%USERPROFILE%\AppData\Local\Temp\*" 2>nul
+
+rem Clean browser caches
+echo Cleaning browser caches...
+del /f /s /q "%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Default\Cache\*" 2>nul
+del /f /s /q "%USERPROFILE%\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*" 2>nul
+
+rem Clean recycle bin
+echo Emptying recycle bin...
+powershell -Command "Clear-RecycleBin -Force" 2>nul
+
+rem Clean Windows Update cache
+echo Cleaning Windows Update cache...
+net stop wuauserv >nul 2>&1
+del /f /s /q "C:\Windows\SoftwareDistribution\Download\*" 2>nul
+net start wuauserv >nul 2>&1
+
+rem Run disk cleanup
+echo Running disk cleanup...
+cleanmgr /sagerun:1 /verylowdisk
+
+call :calc_space
+set /a "FREED_SPACE=(%CURRENT_FREE%-%INITIAL_FREE%)/1024/1024"
+
+echo Cleanup completed!
+echo Freed space: %FREED_SPACE% MB
+pause</code></pre>
+        </div>
+        
+        <h3>מנהל התקנות אוטומטי</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Automated installer manager</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+set "DOWNLOADS_DIR=%USERPROFILE%\Downloads"
+set "INSTALL_LOG=%USERPROFILE%\Desktop\install_log.txt"
+
+echo Software Installation Manager > "%INSTALL_LOG%"
+echo Started: %date% %time% >> "%INSTALL_LOG%"
+
+rem Function to download and install
+:install_software
+set "name=%~1"
+set "url=%~2"
+set "installer=%~3"
+set "args=%~4"
+
+echo Installing %name%...
+echo [%time%] Downloading %name% from %url% >> "%INSTALL_LOG%"
+
+rem Download with PowerShell
+powershell -Command "Invoke-WebRequest -Uri '%url%' -OutFile '%DOWNLOADS_DIR%\%installer%'"
+if %errorlevel% neq 0 (
+    echo [ERROR] Failed to download %name% >> "%INSTALL_LOG%"
+    goto :eof
+)
+
+rem Install silently
+echo [%time%] Installing %name%... >> "%INSTALL_LOG%"
+"%DOWNLOADS_DIR%\%installer%" %args%
+if %errorlevel% equ 0 (
+    echo [SUCCESS] %name% installed successfully >> "%INSTALL_LOG%"
+) else (
+    echo [ERROR] %name% installation failed >> "%INSTALL_LOG%"
+)
+
+rem Cleanup
+del "%DOWNLOADS_DIR%\%installer%" 2>nul
+goto :eof
+
+rem Install popular software
+call :install_software "7-Zip" "https://www.7-zip.org/a/7z2201-x64.exe" "7z-install.exe" "/S"
+call :install_software "Notepad++" "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.6/npp.8.4.6.Installer.x64.exe" "npp-install.exe" "/S"
+
+echo All installations completed. Check log: %INSTALL_LOG%
+pause</code></pre>
+        </div>
+        
+        <h3>מוניטור מערכת ודיווח</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">System monitoring and reporting</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+set "REPORT_FILE=%USERPROFILE%\Desktop\system_report_%date:~-4%%date:~3,2%%date:~0,2%.html"
+
+rem Create HTML report
+(
+echo ^<html^>^<head^>^<title^>System Report^</title^>^</head^>^<body^>
+echo ^<h1^>System Report - %COMPUTERNAME%^</h1^>
+echo ^<p^>Generated: %date% %time%^</p^>
+echo ^<h2^>System Information^</h2^>
+) > "%REPORT_FILE%"
+
+rem System info
+echo ^<h3^>Computer Details^</h3^>^<pre^> >> "%REPORT_FILE%"
+systeminfo | findstr /C:"OS Name" /C:"Total Physical Memory" /C:"System Type" >> "%REPORT_FILE%"
+echo ^</pre^> >> "%REPORT_FILE%"
+
+rem Disk space
+echo ^<h3^>Disk Space^</h3^>^<pre^> >> "%REPORT_FILE%"
+wmic logicaldisk get size,freespace,caption >> "%REPORT_FILE%"
+echo ^</pre^> >> "%REPORT_FILE%"
+
+rem Running processes (top 10 by memory)
+echo ^<h3^>Top Processes by Memory^</h3^>^<pre^> >> "%REPORT_FILE%"
+powershell -Command "Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 10 Name,WorkingSet | Format-Table -AutoSize" >> "%REPORT_FILE%"
+echo ^</pre^> >> "%REPORT_FILE%"
+
+rem Network configuration
+echo ^<h3^>Network Configuration^</h3^>^<pre^> >> "%REPORT_FILE%"
+ipconfig /all | findstr /C:"IPv4 Address" /C:"Subnet Mask" /C:"Default Gateway" >> "%REPORT_FILE%"
+echo ^</pre^> >> "%REPORT_FILE%"
+
+rem Event log errors (last 24 hours)
+echo ^<h3^>Recent System Errors^</h3^>^<pre^> >> "%REPORT_FILE%"
+powershell -Command "Get-EventLog -LogName System -EntryType Error -After (Get-Date).AddDays(-1) | Select-Object -First 5 TimeGenerated,Source,Message | Format-Table -Wrap" >> "%REPORT_FILE%"
+echo ^</pre^>^</body^>^</html^> >> "%REPORT_FILE%"
+
+echo System report generated: %REPORT_FILE%
+start "" "%REPORT_FILE%"</code></pre>
+        </div>
+        
+        <h3>מארגן קבצים חכם</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Smart file organizer</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+
+set "SOURCE_DIR=%USERPROFILE%\Downloads"
+set "ORGANIZED_DIR=%USERPROFILE%\Desktop\Organized"
+
+echo Organizing files from %SOURCE_DIR%...
+
+rem Create organized directories
+for %%d in (Images Videos Documents Archives Programs Others) do (
+    mkdir "%ORGANIZED_DIR%\%%d" 2>nul
+)
+
+rem Organize by file extension
+for %%f in ("%SOURCE_DIR%\*") do (
+    set "file=%%~nxf"
+    set "ext=%%~xf"
+    set "dest=Others"
+    
+    rem Determine destination folder
+    if /i "!ext!"==".jpg" set "dest=Images"
+    if /i "!ext!"==".jpeg" set "dest=Images"
+    if /i "!ext!"==".png" set "dest=Images"
+    if /i "!ext!"==".gif" set "dest=Images"
+    if /i "!ext!"==".mp4" set "dest=Videos"
+    if /i "!ext!"==".avi" set "dest=Videos"
+    if /i "!ext!"==".mkv" set "dest=Videos"
+    if /i "!ext!"==".pdf" set "dest=Documents"
+    if /i "!ext!"==".doc" set "dest=Documents"
+    if /i "!ext!"==".docx" set "dest=Documents"
+    if /i "!ext!"==".zip" set "dest=Archives"
+    if /i "!ext!"==".rar" set "dest=Archives"
+    if /i "!ext!"==".7z" set "dest=Archives"
+    if /i "!ext!"==".exe" set "dest=Programs"
+    if /i "!ext!"==".msi" set "dest=Programs"
+    
+    rem Move file if not already in organized folder
+    if not "%%~dpf"=="%ORGANIZED_DIR%\" (
+        echo Moving !file! to !dest!
+        move "%%f" "%ORGANIZED_DIR%\!dest!\" >nul 2>&1
+    )
+)
+
+echo File organization completed!
+echo Check organized files in: %ORGANIZED_DIR%
+pause</code></pre>
+        </div>
+          <pre><code class="language-batch">@echo off
+echo System Cleanup Starting...
+
+rem Clean temp files
+echo Cleaning temporary files...
+del /q /s "%TEMP%\*" 2>nul
+del /q /s "C:\Windows\Temp\*" 2>nul
+
+rem Clean browser caches
+echo Cleaning browser caches...
+del /q /s "%LOCALAPPDATA%\Google\Chrome\User Data\Default\Cache\*" 2>nul
+del /q /s "%LOCALAPPDATA%\Mozilla\Firefox\Profiles\*\cache2\*" 2>nul
+
+rem Clean recycle bin
+echo Emptying recycle bin...
+powershell -Command "Clear-RecycleBin -Confirm:$false" 2>nul
+
+rem Run disk cleanup
+echo Running disk cleanup...
+cleanmgr /sagerun:1
+
+echo Cleanup completed!
+echo Press any key to view disk space...
+pause >nul
+powershell -Command "Get-WmiObject -Class Win32_LogicalDisk | Select-Object DeviceID, @{Name='Size(GB)';Expression={[math]::Round($_.Size/1GB,2)}}, @{Name='FreeSpace(GB)';Expression={[math]::Round($_.FreeSpace/1GB,2)}} | Format-Table -AutoSize"
+pause</code></pre>
+        </div>
+        <h3>ארגון קבצים לפי סוג</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">File organization by type</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+set SOURCE=%USERPROFILE%\Downloads
+set DEST=%USERPROFILE%\Downloads\Organized
+
+echo Organizing files in %SOURCE%...
+
+rem Create folders
+mkdir "%DEST%\Images" 2>nul
+mkdir "%DEST%\Documents" 2>nul
+mkdir "%DEST%\Videos" 2>nul
+mkdir "%DEST%\Music" 2>nul
+mkdir "%DEST%\Archives" 2>nul
+mkdir "%DEST%\Executables" 2>nul
+
+rem Move files by extension
+for %%f in ("%SOURCE%\*.jpg" "%SOURCE%\*.png" "%SOURCE%\*.gif" "%SOURCE%\*.bmp") do move "%%f" "%DEST%\Images\" 2>nul
+for %%f in ("%SOURCE%\*.pdf" "%SOURCE%\*.docx" "%SOURCE%\*.txt" "%SOURCE%\*.xlsx") do move "%%f" "%DEST%\Documents\" 2>nul
+for %%f in ("%SOURCE%\*.mp4" "%SOURCE%\*.avi" "%SOURCE%\*.mkv" "%SOURCE%\*.mov") do move "%%f" "%DEST%\Videos\" 2>nul
+for %%f in ("%SOURCE%\*.mp3" "%SOURCE%\*.wav" "%SOURCE%\*.flac") do move "%%f" "%DEST%\Music\" 2>nul
+for %%f in ("%SOURCE%\*.zip" "%SOURCE%\*.rar" "%SOURCE%\*.7z") do move "%%f" "%DEST%\Archives\" 2>nul
+for %%f in ("%SOURCE%\*.exe" "%SOURCE%\*.msi") do move "%%f" "%DEST%\Executables\" 2>nul
+
+echo File organization completed!
+pause</code></pre>
+        </div>
+        <h3>מונגון מוניטור מערכת</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">System monitor</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+set LOGFILE=C:\Logs\system_monitor_%date:~6,4%-%date:~3,2%-%date:~0,2%.log
+mkdir C:\Logs 2>nul
+
+echo System Monitor - %date% %time% >> "%LOGFILE%"
+echo ========================================== >> "%LOGFILE%"
+
+rem CPU Usage
+echo CPU Usage: >> "%LOGFILE%"
+wmic cpu get loadpercentage /value | find "LoadPercentage" >> "%LOGFILE%"
+
+rem Memory Usage
+echo Memory Usage: >> "%LOGFILE%"
+wmic OS get TotalVisibleMemorySize,FreePhysicalMemory /value | find "=" >> "%LOGFILE%"
+
+rem Disk Usage
+echo Disk Usage: >> "%LOGFILE%"
+wmic logicaldisk get size,freespace,caption /value | find "=" >> "%LOGFILE%"
+
+rem Running Processes (top 10 by memory)
+echo Top 10 Processes by Memory: >> "%LOGFILE%"
+powershell -Command "Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 10 Name, @{Name='Memory(MB)';Expression={[math]::Round($_.WorkingSet/1MB,2)}} | Format-Table -AutoSize" >> "%LOGFILE%"
+
+echo ========================================== >> "%LOGFILE%"
+echo Log saved to: %LOGFILE%
+type "%LOGFILE%"
+pause</code></pre>
+        </div>
+        <h3>התקנת תוכנות באצווה</h3>
+        <div class="code-box" dir="ltr">
+          <div class="code-header">Batch software installation</div>
+          <button class="copy-btn">העתק</button>
+          <pre><code class="language-batch">@echo off
+rem Check for admin rights
+net session >nul 2>&1 || (
+  echo This script requires administrator rights.
+  powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+  exit /b
+)
+
+echo Installing essential software...
+
+rem Install Chocolatey if not present
+where choco >nul 2>&1 || (
+  echo Installing Chocolatey...
+  powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))"
+)
+
+rem Install software using Chocolatey
+echo Installing software packages...
+choco install -y googlechrome firefox 7zip notepadplusplus git vscode
+choco install -y vlc audacity gimp
+choco install -y python nodejs
+
+echo Installation completed!
+echo Installed software:
+choco list --local-only
+pause</code></pre>
+        </div>
+      </article>
+
+      <article id="faq" class="section">
+        <h2>FAQ</h2>
+        <dl>
+          <dt>למה הפקודה לא מזוהה?</dt>
+          <dd>בדקו ש-PATH נכון ושאין שגיאות כתיב; הפקודה יכולה להיות זמינה רק ב-PowerShell או דורשת התקנה נפרדת.</dd>
+          
+          <dt>למה משתנים לא מתעדכנים בלולאה?</dt>
+          <dd>צריך <code>setlocal enabledelayedexpansion</code> ולהשתמש ב-<code>!VAR!</code> במקום <code>%VAR%</code> בתוך לולאה.</dd>
+          
+          <dt>למה אנטי-וירוס מוחק את הקובץ?</dt>
+          <dd>אנטי-וירוס יכול לסווג קבצי .bat/.exe חדשים כחשודים. השתמשו בחתימה דיגיטלית, או הוסיפו חריגה לאנטי-וירוס.</dd>
+          
+          <dt>למה dir עם עברית מתהפך?</dt>
+          <dd>בעיית קידוד. השתמשו ב-<code>chcp 65001</code> או שמרו את הקובץ ב-UTF-8 עם BOM.</dd>
+          
+          <dt>איך להריץ סקריפט בשקט (ללא חלון)?</dt>
+          <dd>השתמשו ב-VBScript או PowerShell: <code>powershell -WindowStyle Hidden -ExecutionPolicy Bypass -File script.ps1</code></dd>
+          
+          <dt>למה משתני סביבה לא נשמרים אחרי הסקריפט?</dt>
+          <dd>משתנים ב-<code>set</code> זמניים לסשן. להגדרה קבועה השתמשו ב-<code>setx</code> או Registry.</dd>
+          
+          <dt>איך לטפל בנתיבים עם רווחים?</dt>
+          <dd>תמיד השתמשו במירכאות: <code>"C:\Program Files\App\file.exe"</code></dd>
+          
+          <dt>למה הסקריפט נתקע?</dt>
+          <dd>בדקו לולאות אינסופיות, פקודות שממתינות לקלט, או פקודות שדורשות הרשאות מיוחדות.</dd>
+          
+          <dt>איך להסתיר סיסמאות בקלט?</dt>
+          <dd>Batch לא תומך בהסתרת סיסמאות. השתמשו ב-PowerShell עם <code>Read-Host -AsSecureString</code>.</dd>
+          
+          <dt>איך לבדוק אם קובץ בשימוש?</dt>
+          <dd>נסו לפתוח לכתיבה: <code>2>nul (echo test >> "%file%") && echo available || echo in use</code></dd>
+        </dl>
+      </article>
+
+      <article id="exercises" class="section">
+        <h2>תרגילים</h2>
+        <p>תרגלו עם התרגילים הבאים — מהבסיסי למתקדם. פתרונות זמינים בלחיצה.</p>
+        <h3>תרגילים בסיסיים</h3>
+        <ol class="ex-list">
+          <li>צור סקריפט שמעתיק קבצים מתיקייה אחת לאחרת עם הודעת אישור</li>
+          <li>כתוב סקריפט שמבקש שם משתמש ושומר אותו לקובץ עם timestamp</li>
+          <li>בנה סקריפט שמריץ פקודת dir על כל תיקיית משנה ושומר תוצאות לקובץ</li>
+          <li>צור סקריפט שבודק אם תוכנית מסוימת מותקנת ומציג הודעה מתאימה</li>
+          <li>כתוב סקריפט שמונה את כל קבצי .txt בתיקייה ומציג סיכום</li>
+        </ol>
+        <h3>תרגילים מתקדמים</h3>
+        <ol class="ex-list" start="6">
+          <li>צור משימה מתוזמנת שמריצה סקריפט ניקוי יומי ושולחת דו"ח</li>
+          <li>בנה סקריפט שמוריד קובץ JSON ומפענח נתונים ספציפיים</li>
+          <li>כתוב סקריפט שבודק עדכוני קבצים לפי תאריך ומעתיק רק חדשים</li>
+          <li>צור מנגנון לוגים שמוסיף timestamp וסוג הודעה (INFO/ERROR/WARNING)</li>
+          <li>בנה סקריפט שמעדכן ערכים ברישום ויוצר גיבוי לפני השינוי</li>
+          <li>כתוב סקריפט שמנטר שימוש ב-CPU ו-RAM ושולח התראה אם חורג מסף</li>
+          <li>צור סקריפט שמארגן קבצים לפי סוג ותאריך ויוצר מבנה תיקיות מסודר</li>
+          <li>בנה מערכת גיבוי אוטומטית עם דחיסה ובדיקת שלמות</li>
+          <li>כתוב סקריפט שמתקין רשימת תוכנות דרך Chocolatey עם בדיקת תלויות</li>
+          <li>צור dashboard טקסטואלי שמציג מידע מערכת מעודכן כל שנייה</li>
+        </ol>
+        <button id="show-solutions">הצג פתרונות</button>
+        <div id="solutions" hidden>
+          <h3>פתרונות</h3>
+          <h4>תרגילים בסיסיים</h4>
+          <ol>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+set /p source=Enter source folder: 
+set /p dest=Enter destination folder: 
+if not exist "%source%" (echo Source not found & pause & exit /b)
+mkdir "%dest%" 2>nul
+xcopy /e /y "%source%\*" "%dest%\"
+echo Copy completed successfully!
+pause</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+set /p name=Enter your name: 
+echo %date% %time% - %name% >> userlog.txt
+echo Name saved to userlog.txt
+type userlog.txt
+pause</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+for /d %%d in (*) do (
+  echo Listing directory: %%d
+  dir "%%d" >> directory_listing.txt
+  echo. >> directory_listing.txt
+)
+echo Directory listing completed!
+pause</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+set /p program=Enter program name to check: 
+where "%program%" >nul 2>&1 && (
+  echo %program% is installed
+) || (
+  echo %program% is not installed or not in PATH
+)
+pause</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+set count=0
+for %%f in (*.txt) do set /a count+=1
+echo Found %count% .txt files in current directory
+pause</code></pre></li>
+          </ol>
+          <h4>תרגילים מתקדמים</h4>
+          <ol start="6">
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+rem Create cleanup script
+echo @echo off > daily_cleanup.bat
+echo del /q /s %%TEMP%%\* 2^>nul >> daily_cleanup.bat
+echo echo Cleanup completed at %%date%% %%time%% ^> cleanup.log >> daily_cleanup.bat
+rem Schedule the task
+schtasks /create /sc daily /tn "DailyCleanup" /tr "%cd%\daily_cleanup.bat" /st 03:00
+echo Daily cleanup task scheduled for 3 AM</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+curl -s https://jsonplaceholder.typicode.com/posts/1 > post.json
+for /f "tokens=2 delims=:" %%a in ('findstr "title" post.json') do echo Title: %%a
+for /f "tokens=2 delims=:" %%a in ('findstr "userId" post.json') do echo UserID: %%a
+pause</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+setlocal enabledelayedexpansion
+set /p source=Source folder: 
+set /p dest=Destination folder: 
+for %%f in ("%source%\*.*") do (
+  if not exist "%dest%\%%~nxf" (
+    copy "%%f" "%dest%\"
+    echo Copied: %%~nxf
+  ) else (
+    for %%s in ("%%f") do for %%d in ("%dest%\%%~nxf") do (
+      if %%~ts gtr %%~td (
+        copy "%%f" "%dest%\"
+        echo Updated: %%~nxf
+      )
+    )
+  )
+)
+pause</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+set LOGFILE=app.log
+call :log INFO "Application started"
+call :log ERROR "Sample error message"
+call :log WARNING "Sample warning"
+type %LOGFILE%
+pause
+exit /b
+
+:log
+echo %date% %time% [%1] %~2 >> %LOGFILE%
+exit /b</code></pre></li>
+            <li dir="ltr"><pre><code class="language-batch">@echo off
+set KEY=HKCU\Software\MyApp
+set VALUE=TestValue
+set DATA=TestData
+
+rem Backup current value
+reg export %KEY% backup.reg 2>nul
+reg add %KEY% /v %VALUE% /t REG_SZ /d "%DATA%" /f
+echo Registry updated. Backup saved to backup.reg
+pause</code></pre></li>
+          </ol>
+        </div>
+      </article>
+
+      
+
+      <footer class="site-footer">
+        <p>מדריך Batch — גרסה בסיסית. הקפד לקרוא את ההסברים ולבדוק בסביבה מבוקרת.</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
