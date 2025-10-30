@@ -118,13 +118,103 @@ body, .content, .sidebar, #sidebar{
 .sidebar, #sidebar{background:var(--card);padding:1.25rem;border-radius:12px;height:auto;overflow:visible;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);position:sticky;top:1rem;min-width:0}
 .sidebar input[type=search]{width:100%;padding:0.75rem;border-radius:8px;border:1px solid var(--border);margin-bottom:1rem;background:var(--bg);color:var(--fg);font-size:0.95rem;transition:border-color 0.2s;box-sizing:border-box}
 .sidebar input[type=search]:focus{border-color:var(--accent);outline:none}
+.search-info{
+  font-size:0.85rem;
+  color:var(--muted);
+  padding:0.5rem 0.75rem;
+  background:var(--code-bg);
+  border:1px solid var(--border);
+  border-radius:6px;
+  margin-bottom:1rem;
+  text-align:center;
+  animation:fadeIn 0.3s ease;
+}
+.search-navigation{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0.75rem;
+  margin-bottom:1rem;
+  padding:0.5rem;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:6px;
+  position:fixed;
+  transition:all 0.3s ease;
+}
+.close-btn{
+  background:var(--error);
+  color:#fff;
+  border:none;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  cursor:pointer;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:0.8rem;
+  font-weight:bold;
+  transition:all 0.2s ease;
+  position:absolute;
+  top:-8px;
+  right:-8px;
+  box-shadow:0 2px 4px rgba(0,0,0,0.2);
+}
+.close-btn:hover{
+  background:#d32f2f;
+  transform:scale(1.1);
+}
+.nav-btn{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.9rem;
+  font-weight:bold;
+  transition:all 0.2s ease;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1);
+}
+.nav-btn:hover{
+  background:var(--accent-hover);
+  transform:translateY(-1px);
+  box-shadow:0 4px 8px rgba(0,0,0,0.15);
+}
+.nav-btn:disabled{
+  background:var(--muted);
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+#result-counter{
+  font-size:0.85rem;
+  color:var(--fg);
+  font-weight:500;
+  min-width:60px;
+  text-align:center;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
+}
 .toc{list-style:none;padding:0;margin:0}
 .toc li{margin:0.4rem 0}
 .toc a{color:var(--fg);text-decoration:none;padding:0.5rem 0.75rem;border-radius:6px;display:block;transition:all 0.2s;font-size:0.95rem;word-break:break-word}
 .toc a:hover{background:var(--accent);color:#fff;transform:translateX(-2px)}
 .toc a.active{background:var(--accent);color:#fff}
 .content{padding:0;overflow-y:auto;overflow-x:hidden;max-width:900px;margin:0 auto;min-width:0;width:100%}
-.section{background:var(--card);padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:box-shadow 0.2s;max-width:100%;word-wrap:break-word;overflow-wrap:break-word}
+.section{background:var(--card);padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:all 0.3s ease;max-width:100%;word-wrap:break-word;overflow-wrap:break-word}
+.section.current-result{
+  border-color:var(--accent);
+  box-shadow:0 4px 16px rgba(22,163,74,0.2);
+  transform:translateY(-2px);
+}
 .section:hover{box-shadow:0 4px 12px rgba(0,0,0,0.08)}
 .section h2{color:var(--accent);margin-top:0;margin-bottom:1rem;font-size:1.5rem;font-weight:600;word-wrap:break-word}
 .section h3{color:var(--fg);margin-top:1.5rem;margin-bottom:0.75rem;font-size:1.15rem;font-weight:500;word-wrap:break-word}
@@ -306,6 +396,23 @@ textarea#play-area{width:100%;min-height:160px;border-radius:6px;padding:0.8rem;
   ::-webkit-scrollbar{width:12px;height:12px}
   ::-webkit-scrollbar-thumb{border-radius:6px}
   
+  /* Mobile fixed search navigation */
+  .search-navigation.mobile-fixed{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    z-index:10000;
+    box-shadow:0 8px 24px rgba(0,0,0,0.3);
+    margin:0;
+    padding:1rem;
+    border-radius:12px;
+    min-width:200px;
+  }
+  .search-navigation.mobile-fixed .close-btn{
+    display:flex;
+  }
+  
   .site-header{padding:1rem}
   .header-inner{align-items:flex-start;gap:1rem}
   .header-content{flex:1}
@@ -467,6 +574,24 @@ textarea#play-area{width:100%;min-height:160px;border-radius:6px;padding:0.8rem;
   scrollbar-color:#00cc33 #1a1a1a;
 }
 
+/* Dark theme navigation buttons */
+[data-theme="dark"] .nav-btn{
+  background:var(--accent);
+  color:#000;
+}
+[data-theme="dark"] .nav-btn:hover{
+  background:var(--accent-hover);
+  color:#000;
+}
+[data-theme="dark"] .nav-btn:disabled{
+  background:#666666;
+  color:#999999;
+}
+[data-theme="dark"] .section.current-result{
+  border-color:var(--accent);
+  box-shadow:0 4px 16px rgba(0,255,65,0.3);
+}
+
 /* Enhanced syntax highlight */
 code .kw{color:#16a34a;font-weight:600}
 code .str{color:#059669}
@@ -487,6 +612,49 @@ body.sidebar-open{overflow:hidden}
   .copy-btn{font-size:12px;padding:6px}
 }
 mark{background:yellow;color:#000}
+mark.search-highlight{
+  background:#ffeb3b;
+  color:#000;
+  padding:2px 4px;
+  border-radius:3px;
+  font-weight:500;
+  transition:all 0.3s ease;
+}
+mark.search-highlight.current-mark{
+  background:#ff5722;
+  color:#fff;
+  box-shadow:0 0 16px rgba(255,87,34,0.7), 0 0 32px rgba(255,87,34,0.3);
+  transform:scale(1.15);
+  z-index:10;
+  position:relative;
+  border:2px solid #ff5722;
+  animation:currentMarkPulse 1.5s ease-in-out;
+}
+
+@keyframes currentMarkPulse {
+  0% { 
+    box-shadow:0 0 8px rgba(255,87,34,0.4);
+    transform:scale(1.05); 
+  }
+  50% { 
+    box-shadow:0 0 24px rgba(255,87,34,0.8);
+    transform:scale(1.2); 
+  }
+  100% { 
+    box-shadow:0 0 16px rgba(255,87,34,0.7), 0 0 32px rgba(255,87,34,0.3);
+    transform:scale(1.15); 
+  }
+}
+[data-theme="dark"] mark.search-highlight{
+  background:#ffeb3b;
+  color:#000;
+}
+[data-theme="dark"] mark.search-highlight.current-mark{
+  background:#ff5722;
+  color:#fff;
+  box-shadow:0 0 20px rgba(255,87,34,0.9), 0 0 40px rgba(255,87,34,0.4);
+  border:2px solid #ff7043;
+}
 
 
 

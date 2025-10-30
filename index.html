@@ -32,7 +32,13 @@
           <img src="logo_192x192.png" alt="Batch Logo" class="mobile-logo-img">
           <span>Batch מדריך</span>
         </div>
-        <input id="search" type="search" placeholder="חפש בטקסט..." aria-label="חיפוש" />
+        <input id="search" type="search" placeholder="חפש וסנן תכנים..." aria-label="חיפוש וסינון" />
+        <div class="search-navigation" style="display:none;">
+          <button id="close-search" class="close-btn" aria-label="סגור חיפוש">✕</button>
+          <button id="prev-result" class="nav-btn" aria-label="תוצאה קודמת">▲</button>
+          <span id="result-counter">1 / 5</span>
+          <button id="next-result" class="nav-btn" aria-label="תוצאה הבאה">▼</button>
+        </div>
         <ul class="toc">
           <li><a href="#intro">מבוא</a></li>
           <li><a href="#syntax">תחביר בסיסי</a></li>

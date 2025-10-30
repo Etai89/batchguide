@@ -109,53 +109,254 @@ $(function(){
   // ensure directionality for code blocks
   $('pre code').attr('dir','ltr')
 
-  // simple search and highlight
+  // Advanced search and filtering system with navigation
+  let searchResults = []
+  let currentResultIndex = 0
+
   function clearMarks(){
     $('.section').each(function(){
       const $s=$(this)
+      $s.show() // Show all sections
+      $s.removeClass('current-result')
       $s.find('mark').each(function(){
         const $m=$(this)
         $m.replaceWith($m.text())
       })
     })
+    searchResults = []
+    currentResultIndex = 0
+    $('.search-navigation').hide()
+    deactivateMobileNavigation()
   }
-  function markText(term){
-    if(!term) return
-    const re=new RegExp('('+term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig')
+
+  function searchAndFilter(term){
+    if(!term) {
+      $('.section').show()
+      searchResults = []
+      $('.search-navigation').hide()
+      return
+    }
+
+    const searchTerms = term.toLowerCase().split(' ').filter(t => t.length > 0)
+    let foundMarks = []
+
     $('.section').each(function(){
-      const $s=$(this)
-      $s.contents().filter(function(){
-        return this.nodeType===3
-      }).each(function(){
-        const txt=this.nodeValue
-        if(re.test(txt)){
-          const html=txt.replace(re,'<mark>$1</mark>')
-          $(this).replaceWith(html)
-        }
-      })
+      const $section = $(this)
+      const sectionText = $section.text().toLowerCase()
+      let hasMatches = false
+      
+      // Check if section contains ANY search term
+      const matchesAnyTerm = searchTerms.some(searchTerm => 
+        sectionText.includes(searchTerm)
+      )
 
-      // also search inside code blocks
-      $s.find('pre code').each(function(){
-        const $c=$(this)
-        const html=$c.html()
-        if(re.test(html)){
-          $c.html(html.replace(re,'<mark>$1</mark>'))
-        }
-      })
+      if(matchesAnyTerm) {
+        $section.show()
+        hasMatches = true
+        
+        // Highlight matches and collect mark positions
+        searchTerms.forEach(searchTerm => {
+          const re = new RegExp('('+searchTerm.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig')
+          
+          // Highlight in text nodes
+          $section.find('*').addBack().contents().filter(function(){
+            return this.nodeType === 3 && this.nodeValue.trim() !== ''
+          }).each(function(){
+            const txt = this.nodeValue
+            if(re.test(txt)){
+              const $parent = $(this).parent()
+              const html = txt.replace(re,'<mark class="search-highlight">$1</mark>')
+              $(this).replaceWith(html)
+            }
+          })
 
-      if($s.find('mark').length){
-        $('html,body').animate({scrollTop:$s.offset().top-20},250)
+          // Highlight in code blocks specifically
+          $section.find('pre code').each(function(){
+            const $code = $(this)
+            let html = $code.html()
+            if(re.test(html)){
+              html = html.replace(re,'<mark class="search-highlight">$1</mark>')
+              $code.html(html)
+            }
+          })
+        })
+
+        // Collect all marks in this section
+        $section.find('mark.search-highlight').each(function(){
+          foundMarks.push($(this))
+        })
+      } else {
+        $section.hide()
       }
     })
+
+    // Update search results to individual marks
+    searchResults = foundMarks
+    currentResultIndex = 0
+
+    // Update search results info and navigation
+    updateSearchInfo(foundMarks.length, term)
+    updateNavigation()
+    activateMobileNavigation()
+
+    // Navigate to first mark and center it
+    if(foundMarks.length > 0) {
+      navigateToResult(0)
+    }
   }
 
-  let searchTimer=null
-  $search.on('input',function(){
-    clearTimeout(searchTimer)
-    const term=$(this).val().trim()
+  function updateSearchInfo(count, term) {
+    // Remove existing search info
+    $('.search-info').remove()
+    
+    if(term && term.length > 0) {
+      const infoText = count > 0 ? 
+        `נמצאו ${count} התאמות עבור "${term}"` : 
+        `לא נמצאו תוצאות עבור "${term}"`
+      
+      const $info = $('<div class="search-info">' + infoText + '</div>')
+      $('.search-navigation').before($info)
+    }
+  }
+
+  function updateNavigation() {
+    const $nav = $('.search-navigation')
+    const $counter = $('#result-counter')
+    const $prevBtn = $('#prev-result')
+    const $nextBtn = $('#next-result')
+
+    if(searchResults.length > 1) {
+      $nav.show()
+      $counter.text(`${currentResultIndex + 1} / ${searchResults.length}`)
+      
+      // Update button states
+      $prevBtn.prop('disabled', currentResultIndex === 0)
+      $nextBtn.prop('disabled', currentResultIndex === searchResults.length - 1)
+    } else if(searchResults.length === 1) {
+      $nav.show()
+      $counter.text('1 / 1')
+      $prevBtn.prop('disabled', true)
+      $nextBtn.prop('disabled', true)
+    } else {
+      $nav.hide()
+    }
+  }
+
+  function activateMobileNavigation() {
+    if(window.innerWidth <= 640 && searchResults.length > 0) {
+      $('.search-navigation').addClass('mobile-fixed')
+      // Close sidebar if open
+      $('#sidebar').removeClass('open')
+      $('.sidebar-overlay').removeClass('active')
+      $('body').removeClass('sidebar-open')
+    }
+  }
+
+  function deactivateMobileNavigation() {
+    $('.search-navigation').removeClass('mobile-fixed')
+  }
+
+  function navigateToResult(index) {
+    if(index < 0 || index >= searchResults.length) return
+
+    // Remove current highlight
+    $('mark.search-highlight').removeClass('current-mark')
+    
+    // Set new current result
+    currentResultIndex = index
+    const $currentMark = searchResults[currentResultIndex]
+    $currentMark.addClass('current-mark')
+    
+    // Calculate position to center the mark on screen
+    const markTop = $currentMark.offset().top
+    const markHeight = $currentMark.outerHeight()
+    const viewportHeight = $(window).height()
+    const centerOffset = (viewportHeight / 2) - (markHeight / 2)
+    let scrollPosition = markTop - centerOffset
+    
+    // Ensure we don't scroll beyond the document bounds
+    const documentHeight = $(document).height()
+    const maxScroll = Math.max(0, documentHeight - viewportHeight)
+    
+    // Add some padding to prevent edge cases
+    const topPadding = 100
+    const bottomPadding = 100
+    
+    scrollPosition = Math.max(topPadding, Math.min(scrollPosition, maxScroll - bottomPadding))
+    
+    // Scroll to center the mark with smooth animation
+    $('html,body').animate({
+      scrollTop: scrollPosition
+    }, 400, 'swing')
+
+    updateNavigation()
+  }
+
+  // Navigation button events
+  $('#prev-result').on('click', function() {
+    if(currentResultIndex > 0) {
+      navigateToResult(currentResultIndex - 1)
+    }
+  })
+
+  $('#next-result').on('click', function() {
+    if(currentResultIndex < searchResults.length - 1) {
+      navigateToResult(currentResultIndex + 1)
+    }
+  })
+
+  // Close search navigation
+  $('#close-search').on('click', function() {
+    deactivateMobileNavigation()
     clearMarks()
-    if(term.length<1) return
-    searchTimer=setTimeout(()=>markText(term),250)
+    $search.val('')
+    $('.search-info').remove()
+    $('.search-navigation').hide()
+  })
+
+  // Auto-activate mobile navigation when using nav buttons
+  $('.nav-btn').on('click', function() {
+    if(window.innerWidth <= 640) {
+      activateMobileNavigation()
+    }
+  })
+
+  // Handle window resize
+  $(window).on('resize', function() {
+    if(window.innerWidth > 640) {
+      deactivateMobileNavigation()
+    } else if(searchResults.length > 0 && $('.search-navigation').is(':visible')) {
+      activateMobileNavigation()
+    }
+  })
+
+  // Keyboard navigation
+  $(document).on('keydown', function(e) {
+    if($('.search-navigation').is(':visible')) {
+      if(e.key === 'ArrowDown' || e.key === 'Enter') {
+        e.preventDefault()
+        $('#next-result').click()
+      } else if(e.key === 'ArrowUp') {
+        e.preventDefault()
+        $('#prev-result').click()
+      }
+    }
+  })
+
+  let searchTimer = null
+  $search.on('input', function(){
+    clearTimeout(searchTimer)
+    const term = $(this).val().trim()
+    clearMarks()
+    
+    if(term.length < 1) {
+      $('.section').show()
+      $('.search-info').remove()
+      $('.search-navigation').hide()
+      return
+    }
+    
+    searchTimer = setTimeout(() => searchAndFilter(term), 300)
   })
 
   // Syntax highlighting disabled to prevent display issues
